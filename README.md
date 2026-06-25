@@ -53,7 +53,7 @@ You will need **accounts** for the following — all free tiers are sufficient t
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/instadm-open/autodmx.git
+https://github.com/Qaxlabs/AutoDMX
 cd autodmx
 ```
 
