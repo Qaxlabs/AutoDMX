@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-zinc-900 border border-zinc-800 rounded-xl p-5;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg
+           font-medium text-sm transition-colors disabled:opacity-50
+           disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-accent-600 hover:bg-accent-500 text-white;
+  }
+  .btn-secondary {
+    @apply btn bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700;
+  }
+  .btn-danger {
+    @apply btn bg-red-600/90 hover:bg-red-600 text-white;
+  }
+  .input {
+    @apply w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2
+           text-sm text-zinc-100 placeholder-zinc-500
+           focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent;
+  }
+  .label {
+    @apply block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wide;
+  }
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium;
+  }
+  .badge-default {
+    @apply badge bg-zinc-800 text-zinc-300 border border-zinc-700;
+  }
+  .badge-accent {
+    @apply badge bg-accent-500/15 text-accent-400 border border-accent-500/30;
+  }
+  .badge-success {
+    @apply badge bg-emerald-500/15 text-emerald-400 border border-emerald-500/30;
+  }
+  .badge-warn {
+    @apply badge bg-amber-500/15 text-amber-400 border border-amber-500/30;
+  }
+}
+
+/* Subtle scrollbar in dark theme */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #09090b; }
+::-webkit-scrollbar-thumb { background: #27272a; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
