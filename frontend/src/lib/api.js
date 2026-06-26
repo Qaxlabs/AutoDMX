@@ -12,6 +12,12 @@ export function setBackendUrl(url) {
   localStorage.setItem(SETTINGS_KEY, url)
 }
 
+// Direct download URL for the leads CSV endpoint. Returned as a string so
+// callers can drop it straight into an <a href={...}> without an extra fetch.
+export function exportLeadsUrl() {
+  return `${getBackendUrl()}/leads/export`
+}
+
 // --- low-level fetch helpers ------------------------------------------------
 
 async function request(path, { method = 'GET', body, headers = {} } = {}) {
