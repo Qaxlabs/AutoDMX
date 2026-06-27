@@ -63,7 +63,7 @@ except ImportError:
         return None
 
 # CRUD API Routes
-@router.get("/", response_model=List[Flow])
+@router.get("", response_model=List[Flow])
 async def list_flows():
     """
     List all flows
@@ -75,7 +75,7 @@ async def list_flows():
         logger.error(f"Error fetching flows: {str(e)}")
         raise HTTPException(status_code=500, detail="Error fetching flows")
 
-@router.post("/", response_model=Flow)
+@router.post("", response_model=Flow)
 async def create_flow(flow: FlowCreate):
     """
     Create new flow

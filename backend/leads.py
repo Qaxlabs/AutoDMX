@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("")
-@router.get("/")
 async def list_leads():
     """
     List all contacts (leads) with their flow names.

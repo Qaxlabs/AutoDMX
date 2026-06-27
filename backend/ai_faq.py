@@ -88,7 +88,7 @@ Be friendly, brief, and conversational. Max 2 sentences."""
         return None
 
 # CRUD API ROUTES for FAQs
-@router.get("/", response_model=List[FAQ])
+@router.get("", response_model=List[FAQ])
 async def list_faqs():
     """
     List all FAQs
@@ -100,7 +100,7 @@ async def list_faqs():
         logger.error(f"Error fetching FAQs: {str(e)}")
         raise HTTPException(status_code=500, detail="Error fetching FAQs")
 
-@router.post("/", response_model=FAQ)
+@router.post("", response_model=FAQ)
 async def create_faq(faq: FAQCreate):
     """
     Add new FAQ
