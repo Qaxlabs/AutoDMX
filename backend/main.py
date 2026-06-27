@@ -5,6 +5,7 @@ from backend.flows import router as flows_router
 from backend.leads import router as leads_router
 from backend.analytics import router as analytics_router
 from backend.ai_faq import router as faqs_router
+from backend.instagram import router as instagram_router
 
 app = FastAPI(title="AutoDMX", description="Self-hosted Instagram DM automation tool", redirect_slashes=False)
 
@@ -24,6 +25,7 @@ app.include_router(flows_router, prefix="/flows", tags=["flows"])
 app.include_router(leads_router, prefix="/leads", tags=["leads"])
 app.include_router(analytics_router, prefix="/analytics", tags=["analytics"])
 app.include_router(faqs_router, prefix="/faqs", tags=["faqs"])
+app.include_router(instagram_router, prefix="/instagram", tags=["instagram"])
 
 @app.get("/health")
 async def health_check():

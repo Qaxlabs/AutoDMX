@@ -28,6 +28,7 @@ class FlowCreate(BaseModel):
     collect_email: bool
     collect_phone: bool
     active: bool
+    media_id: Optional[str] = None
 
 class FlowUpdate(BaseModel):
     name: Optional[str] = None
@@ -40,6 +41,7 @@ class FlowUpdate(BaseModel):
     collect_email: Optional[bool] = None
     collect_phone: Optional[bool] = None
     active: Optional[bool] = None
+    media_id: Optional[str] = None
 
 class Flow(BaseModel):
     id: str
@@ -53,6 +55,7 @@ class Flow(BaseModel):
     collect_email: bool
     collect_phone: bool
     active: bool
+    media_id: Optional[str] = None
 
 # Import AI FAQ responder
 try:
@@ -168,16 +171,30 @@ async def process_comment(user_id: str, comment_text: str, media_id: str):
         response = supabase.table("flows").select("*").eq("trigger_type", "comment").eq("active", True).execute()
         flows = response.data
 
-        # Check if comment_text contains ANY of the flow's trigger_keywords (case-insensitive)
+        # Check if comment matches the flow (matching media_id and keywords)
         matched_flow = None
         for flow in flows:
+            # 1. Post matching check: if flow is assigned to a specific media_id, it must match the comment's media_id
+            flow_media_id = flow.get("media_id")
+            if flow_media_id and flow_media_id != media_id:
+                continue
+
+            # 2. Keyword matching check
             trigger_keywords = flow.get("trigger_keywords", [])
-            for keyword in trigger_keywords:
-                if keyword.lower() in comment_text.lower():
+            if not trigger_keywords:
+                # If keywords list is empty, match ALL comments on this post/globally
+                matched_flow = flow
+                break
+            else:
+                # If keywords filled, only trigger when comment contains those words (case-insensitive)
+                matched = False
+                for keyword in trigger_keywords:
+                    if keyword.lower() in comment_text.lower():
+                        matched = True
+                        break
+                if matched:
                     matched_flow = flow
                     break
-            if matched_flow:
-                break
 
         if matched_flow:
             # Log to messages_log (direction: 'inbound')

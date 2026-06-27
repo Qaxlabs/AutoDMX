@@ -78,4 +78,7 @@ export const api = {
 
   // Analytics
   getSummary:  ()               => request('/analytics/summary'),
+
+  // Instagram Media
+  listInstagramMedia: ()        => request('/instagram/media'),
 }
