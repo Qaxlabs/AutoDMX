@@ -6,7 +6,7 @@ from backend.leads import router as leads_router
 from backend.analytics import router as analytics_router
 from backend.ai_faq import router as faqs_router
 
-app = FastAPI(title="AutoDMX", description="Self-hosted Instagram DM automation tool")
+app = FastAPI(title="AutoDMX", description="Self-hosted Instagram DM automation tool", redirect_slashes=False)
 
 # Add CORS middleware
 app.add_middleware(
