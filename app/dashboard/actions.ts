@@ -24,24 +24,15 @@ export type AutomationInput = {
 export async function savePostAutomation(input: AutomationInput) {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error('Unauthorized');
-  }
-
-  // Verify the account belongs to the current user
+  // Verify the account exists
   const { data: account, error: accountError } = await supabase
     .from('accounts')
     .select('id')
     .eq('id', input.accountId)
-    .eq('user_id', user.id)
     .single();
 
   if (accountError || !account) {
-    throw new Error('Unauthorized account access.');
+    throw new Error('Account not found.');
   }
 
   // Check for existing automation for this specific post

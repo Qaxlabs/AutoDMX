@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
 import ContactsTable from './ContactsTable';
 
@@ -24,13 +23,6 @@ export default async function ContactsPage({
 }) {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return redirect('/login');
-  }
 
   // 1. Fetch connected accounts
   const { data: accounts, error: accountsError } = await supabase

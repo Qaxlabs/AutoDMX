@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
 import { decrypt } from '@/lib/crypto';
+import { initializeAccountIfNeeded } from '@/lib/instagram';
 import DashboardGrid from './DashboardGrid';
 
 type Post = {
@@ -21,15 +21,14 @@ export default async function Dashboard({
 }) {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return redirect('/login');
+  // 1. Auto-initialize account if needed using environment variables
+  const initResult = await initializeAccountIfNeeded();
+  let initError: string | null = null;
+  if (!initResult.success && initResult.error) {
+    initError = initResult.error;
   }
 
-  // 1. Fetch connected accounts
+  // 2. Fetch connected accounts
   const { data: accounts, error: accountsError } = await supabase
     .from('accounts')
     .select('id, ig_username, ig_user_id, encrypted_access_token')
@@ -44,7 +43,7 @@ export default async function Dashboard({
     );
   }
 
-  // Handle empty state
+  // Handle empty state (or initialization failure)
   if (!accounts || accounts.length === 0) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col">
@@ -59,23 +58,31 @@ export default async function Dashboard({
         <main className="max-w-7xl mx-auto px-6 py-24 flex-1 flex flex-col justify-center items-center text-center relative z-10">
           <div className="absolute top-[20%] left-[30%] w-[40%] h-[40%] rounded-full bg-violet-900/10 blur-[120px] pointer-events-none" />
 
-          <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-6">
-            <svg className="w-8 h-8 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </div>
-
-          <h2 className="text-2xl font-extrabold tracking-tight">No Connected Accounts</h2>
-          <p className="text-sm text-slate-400 max-w-sm mt-2 mb-8 leading-relaxed">
-            Please connect your Instagram Creator or Business account in settings to start automating comment responses.
-          </p>
-          <Link
-            href="/dashboard/settings"
-            className="px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white transition-all duration-300 shadow-[0_0_20px_rgba(139,92,246,0.2)]"
-          >
-            Go to Settings
-          </Link>
+          {initError ? (
+            <div className="mb-8 p-8 rounded-2xl border border-red-500/30 bg-red-950/20 text-red-400 text-sm flex flex-col items-center gap-3 max-w-xl text-center">
+              <svg className="w-12 h-12 text-red-500 mb-2 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <h3 className="text-lg font-bold text-slate-200">Instagram connection failed</h3>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">{initError}</p>
+              <p className="text-xs text-slate-500 mt-4 leading-relaxed">
+                Please configure <code className="bg-slate-900 px-1.5 py-0.5 rounded text-violet-400 font-mono">META_INITIAL_ACCESS_TOKEN</code>, <code className="bg-slate-900 px-1.5 py-0.5 rounded text-violet-400 font-mono">META_APP_ID</code>, and <code className="bg-slate-900 px-1.5 py-0.5 rounded text-violet-400 font-mono">META_APP_SECRET</code> in <code className="bg-slate-900 px-1.5 py-0.5 rounded text-slate-500 font-mono">.env.local</code> (or environment variables) and reload the dashboard.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-6">
+                <svg className="w-8 h-8 text-violet-400 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-extrabold tracking-tight">No Connected Accounts</h2>
+              <p className="text-sm text-slate-400 max-w-sm mt-2 mb-8 leading-relaxed">
+                Setting up the initial Instagram account automatically. Please wait...
+              </p>
+            </div>
+          )}
         </main>
       </div>
     );

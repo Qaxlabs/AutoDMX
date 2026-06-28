@@ -1,4 +1,4 @@
-import { decrypt } from '@/lib/crypto';
+import { encrypt, decrypt } from '@/lib/crypto';
 import { supabase } from '@/lib/supabase';
 
 interface InstagramComment {
@@ -565,5 +565,101 @@ export async function handleMessageEvent(
     }
   } catch (err) {
     console.error(`[Instagram DM Error] Failed to process message event from ${senderId}:`, err);
+  }
+}
+
+export async function initializeAccountIfNeeded(): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { count, error: countError } = await supabase
+      .from('accounts')
+      .select('id', { count: 'exact', head: true });
+
+    if (countError) {
+      return { success: false, error: `Database check failed: ${countError.message}` };
+    }
+
+    if (count && count > 0) {
+      return { success: true };
+    }
+
+    // No account row exists, let's auto-connect using env variables
+    const token = process.env.META_INITIAL_ACCESS_TOKEN;
+    const appId = process.env.META_APP_ID;
+    const appSecret = process.env.META_APP_SECRET;
+
+    if (!token || !appId || !appSecret) {
+      return {
+        success: false,
+        error: 'Missing required environment variables: META_INITIAL_ACCESS_TOKEN, META_APP_ID, or META_APP_SECRET.',
+      };
+    }
+
+    // 1. Fetch linked Instagram Business Account from Facebook Pages
+    const pagesRes = await fetch(
+      `https://graph.facebook.com/v19.0/me/accounts?fields=id,instagram_business_account{id,username}&access_token=${token}`
+    );
+    const pagesData = await pagesRes.json();
+
+    if (pagesData.error) {
+      return {
+        success: false,
+        error: `Facebook API Error: ${pagesData.error.message}`,
+      };
+    }
+
+    const linkedPage = (pagesData.data as Array<{ id: string; instagram_business_account?: { id: string; username: string } }>)?.find(
+      (p) => p.instagram_business_account
+    );
+    if (!linkedPage || !linkedPage.instagram_business_account) {
+      return {
+        success: false,
+        error: 'No linked Instagram Creator or Business account was found on any Facebook Pages for the provided token.',
+      };
+    }
+
+    const fbPageId = linkedPage.id;
+    const igUserId = linkedPage.instagram_business_account.id;
+    const igUsername = linkedPage.instagram_business_account.username;
+
+    // 2. Double-check token works directly on the Instagram user endpoint
+    const igRes = await fetch(
+      `https://graph.facebook.com/v19.0/${igUserId}?fields=id,username&access_token=${token}`
+    );
+    const igData = await igRes.json();
+
+    if (igData.error) {
+      return {
+        success: false,
+        error: `Instagram Verification Error: ${igData.error.message}`,
+      };
+    }
+
+    // 3. Encrypt credentials
+    const encryptedToken = encrypt(token);
+    const encryptedSecret = encrypt(appSecret);
+
+    // 4. Save account row to database
+    const { error: insertError } = await supabase.from('accounts').insert({
+      ig_user_id: igUserId,
+      ig_username: igUsername,
+      encrypted_access_token: encryptedToken,
+      fb_page_id: fbPageId,
+      app_id: appId,
+      encrypted_app_secret: encryptedSecret,
+    });
+
+    if (insertError) {
+      return {
+        success: false,
+        error: `Failed to insert account into database: ${insertError.message}`,
+      };
+    }
+
+    console.log(`[Auto-Init] Successfully connected Instagram account: @${igUsername}`);
+    return { success: true };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[Auto-Init Exception] Failed to initialize Instagram account:', err);
+    return { success: false, error: `Initialization Exception: ${msg}` };
   }
 }
