@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
 
 export async function login(formData: FormData) {
@@ -25,6 +26,7 @@ export async function login(formData: FormData) {
 
 export async function signup(formData: FormData) {
   const supabase = createClient();
+  const origin = headers().get('origin') || 'https://autodmx.netlify.app';
 
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
@@ -32,6 +34,9 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      emailRedirectTo: `${origin}/dashboard`,
+    },
   });
 
   if (error) {
