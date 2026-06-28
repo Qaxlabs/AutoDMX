@@ -206,3 +206,7 @@ export default async function Dashboard({
       {/* Footer */}
       <footer className="border-t border-slate-900 py-6 text-center text-xs text-slate-500 mt-20">
         <p>© {new Date().getFullYear()} AutoDMX. Dashboard Area.</p>
+      </footer>
+    </div>
+  );
+}
