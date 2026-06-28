@@ -1,0 +1,17 @@
+Project: AutoDMX — open-source Instagram comment-to-DM automation tool.
+
+Stack:
+- Next.js 14+ (App Router), TypeScript, Tailwind CSS
+- Supabase (Postgres + Auth) via @supabase/supabase-js
+- Deploy target: Netlify (functions, not Vercel-specific APIs)
+- No Redis, no separate worker process — background work happens via
+  Netlify scheduled functions / GitHub Actions calling API routes
+- All Meta Graph API calls go through a single lib/instagram.ts client
+- Never log access tokens or webhook payload contents containing PII
+- All Instagram access tokens encrypted at rest (AES-256-GCM) before
+  writing to Supabase, decrypted only in-memory when calling the API
+- Respect Meta's limits explicitly: 200 sends/hour/account, single
+  content block on first private reply after a comment, 24h messaging
+  window per contact
+- Every API route that touches Instagram must check rate limits via
+  the send_queue table before calling Meta's API directly

@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-httpx
-supabase
-groq
-python-dotenv
-pydantic
-pydantic-settings

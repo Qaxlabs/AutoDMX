@@ -1,0 +1,17 @@
+name: AutoDMX Cron
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # every 10 minutes
+  workflow_dispatch: {}
+jobs:
+  drain-queue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Drain send queue
+        run: |
+          curl -X POST "${{ secrets.NETLIFY_SITE_URL }}/api/cron/drain-queue" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
+      - name: Ping Supabase to prevent auto-pause
+        run: |
+          curl "${{ secrets.SUPABASE_URL }}/rest/v1/accounts?select=id&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}"
