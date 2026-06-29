@@ -19,14 +19,10 @@ interface InstagramAutomation {
   account_id: string;
   name: string;
   public_reply_variants?: string[];
-  opening_dm?: string;
+  message?: string | null;
+  links?: string[] | null;
   requires_follow?: boolean;
   follow_prompt_message?: string | null;
-  follow_up_message?: string | null;
-  follow_up_delay_minutes?: number | null;
-  final_message?: string | null;
-  final_links?: string[] | null;
-  email_capture?: boolean;
   is_active?: boolean;
 }
 
@@ -79,8 +75,8 @@ interface DecryptedAccount {
  * Builds the final message string containing the final message and redirect-wrapped links.
  */
 async function buildFinalMessage(automation: InstagramAutomation): Promise<string> {
-  const finalMsg = automation.final_message || '';
-  const links = automation.final_links || [];
+  const finalMsg = automation.message || '';
+  const links = automation.links || [];
   let fullMessage = finalMsg;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -369,30 +365,21 @@ export async function handleCommentTrigger(
     });
 
     // 4. Evaluate gates for the one-shot private reply
-    const hasEmail = existingContact ? !!existingContact.email : false;
     const requiresFollow = automation.requires_follow ?? false;
-    const requiresEmail = (automation.email_capture ?? false) && !hasEmail;
 
     let messageText = '';
     let quickReplies: Array<{ content_type: string; title: string; payload: string }> | undefined = undefined;
     let nextStep = 'completed';
 
-    const openingText = automation.opening_dm ? `${automation.opening_dm}\n\n` : '';
-
     if (requiresFollow) {
       const isFollowing = await checkFollowStatus(comment.from.id, accessToken, contactId, automation.id);
       if (isFollowing) {
-        if (requiresEmail) {
-          messageText = openingText + 'Please reply with your email address to receive the details.';
-          nextStep = 'awaiting_email';
-        } else {
-          const finalMsg = await buildFinalMessage(automation);
-          messageText = openingText + finalMsg;
-          nextStep = 'completed';
-        }
+        const finalMsg = await buildFinalMessage(automation);
+        messageText = finalMsg;
+        nextStep = 'completed';
       } else {
         const followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
-        messageText = openingText + followPrompt;
+        messageText = followPrompt;
         quickReplies = [
           {
             content_type: 'text',
@@ -402,12 +389,9 @@ export async function handleCommentTrigger(
         ];
         nextStep = 'awaiting_follow_recheck';
       }
-    } else if (requiresEmail) {
-      messageText = openingText + 'Please reply with your email address to receive the details.';
-      nextStep = 'awaiting_email';
     } else {
       const finalMsg = await buildFinalMessage(automation);
-      messageText = openingText + finalMsg;
+      messageText = finalMsg;
       nextStep = 'completed';
     }
 
@@ -578,21 +562,12 @@ export async function handleMessageEvent(
     if (currentStep === 'awaiting_follow_recheck') {
       const isFollowingNow = await checkFollow();
       if (isFollowingNow) {
-        const needsEmail = (automation.email_capture ?? false) && !contact.email;
-        if (needsEmail) {
-          await sendDmAndLog('Please reply with your email address to receive the details.');
-          await supabase
-            .from('conversation_state')
-            .update({ current_step: 'awaiting_email' })
-            .eq('id', state.id);
-        } else {
-          const finalMsg = await buildFinalMessage(automation);
-          await sendDmAndLog(finalMsg);
-          await supabase
-            .from('conversation_state')
-            .update({ current_step: 'completed' })
-            .eq('id', state.id);
-        }
+        const finalMsg = await buildFinalMessage(automation);
+        await sendDmAndLog(finalMsg);
+        await supabase
+          .from('conversation_state')
+          .update({ current_step: 'completed' })
+          .eq('id', state.id);
       } else {
         const followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
         await sendDmAndLog(followPrompt, [
@@ -603,31 +578,6 @@ export async function handleMessageEvent(
           },
         ]);
         // Stay on awaiting_follow_recheck
-      }
-    } else if (currentStep === 'awaiting_email') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const trimmedText = text.trim();
-
-      if (emailRegex.test(trimmedText)) {
-        console.log(`[State Machine] Valid email captured: ${trimmedText}`);
-        
-        // Save email to contact
-        await supabase
-          .from('contacts')
-          .update({ email: trimmedText })
-          .eq('id', contact.id);
-
-        const finalMsg = await buildFinalMessage(automation);
-        await sendDmAndLog(finalMsg);
-        
-        await supabase
-          .from('conversation_state')
-          .update({ current_step: 'completed' })
-          .eq('id', state.id);
-      } else {
-        console.log(`[State Machine] Invalid email captured: "${trimmedText}". Re-prompting.`);
-        await sendDmAndLog("That doesn't look like a valid email address. Please reply with a valid email to get your link.");
-        // Stay on awaiting_email
       }
     }
   } catch (err) {

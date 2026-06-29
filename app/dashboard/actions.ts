@@ -11,13 +11,10 @@ export type AutomationInput = {
   mediaId: string | null;
   keywords: string[];
   publicReplyVariants: string[];
-  openingDm: string;
+  message: string;
+  links: string[];
   requiresFollow: boolean;
-  followUpMessage: string | null;
-  followUpDelayMinutes: number | null;
-  finalMessage: string | null;
-  finalLinks: string[];
-  emailCapture: boolean;
+  followPromptMessage?: string | null;
   isActive: boolean;
 };
 
@@ -52,13 +49,10 @@ export async function savePostAutomation(input: AutomationInput) {
     media_id: input.mediaId,
     keywords: input.keywords,
     public_reply_variants: input.publicReplyVariants,
-    opening_dm: input.openingDm,
+    message: input.message,
+    links: input.links,
     requires_follow: input.requiresFollow,
-    follow_up_message: input.followUpMessage,
-    follow_up_delay_minutes: input.followUpDelayMinutes,
-    final_message: input.finalMessage,
-    final_links: input.finalLinks,
-    email_capture: input.emailCapture,
+    follow_prompt_message: input.followPromptMessage || null,
     is_active: input.isActive,
   };
 

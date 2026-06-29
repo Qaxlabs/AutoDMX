@@ -22,9 +22,10 @@ type Automation = {
   media_id: string | null;
   keywords: string[];
   public_reply_variants: string[];
-  opening_dm: string;
+  message?: string | null;
+  links?: string[] | null;
   requires_follow: boolean;
-  email_capture: boolean;
+  follow_prompt_message?: string | null;
   is_active: boolean;
 };
 

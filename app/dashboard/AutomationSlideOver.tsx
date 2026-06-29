@@ -20,13 +20,10 @@ type Automation = {
   media_id: string | null;
   keywords: string[];
   public_reply_variants: string[];
-  opening_dm: string;
+  message?: string | null;
+  links?: string[] | null;
   requires_follow: boolean;
-  follow_up_message?: string | null;
-  follow_up_delay_minutes?: number | null;
-  final_message?: string | null;
-  final_links?: string[] | null;
-  email_capture: boolean;
+  follow_prompt_message?: string | null;
   is_active: boolean;
 };
 
@@ -58,36 +55,21 @@ export default function AutomationSlideOver({
   const [publicReply2, setPublicReply2] = useState('');
   const [publicReply3, setPublicReply3] = useState('');
   
-  // 3. Opening DM
-  const [openingDm, setOpeningDm] = useState('');
+  // 3. Message & Links (up to 3)
+  const [message, setMessage] = useState('');
+  const [link1, setLink1] = useState('');
+  const [link2, setLink2] = useState('');
+  const [link3, setLink3] = useState('');
   
-  // 4. Require follow toggle
+  // 4. Require follow gate
   const [requiresFollow, setRequiresFollow] = useState(false);
-  
-  // 5. Follow-up
-  const [followUpMessage, setFollowUpMessage] = useState('');
-  const [followUpDelayMinutes, setFollowUpDelayMinutes] = useState<number | ''>(5);
-  
-  // 6. Final Message & Links (up to 3)
-  const [finalMessage, setFinalMessage] = useState('');
-  const [finalLink1, setFinalLink1] = useState('');
-  const [finalLink2, setFinalLink2] = useState('');
-  const [finalLink3, setFinalLink3] = useState('');
-  
-  // 7. Collect email toggle
-  const [emailCapture, setEmailCapture] = useState(false);
+  const [followPromptMessage, setFollowPromptMessage] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
   
   // Status and loading states
   const [isActive, setIsActive] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Compute if final step exists to conditionally render follow-up
-  const hasFinalStep = 
-    finalMessage.trim() !== '' || 
-    finalLink1.trim() !== '' || 
-    finalLink2.trim() !== '' || 
-    finalLink3.trim() !== '';
 
   // Prefill form when post or existingAutomation changes
   useEffect(() => {
@@ -104,18 +86,13 @@ export default function AutomationSlideOver({
       setPublicReply2(existingAutomation.public_reply_variants?.[1] || '');
       setPublicReply3(existingAutomation.public_reply_variants?.[2] || '');
       
-      setOpeningDm(existingAutomation.opening_dm || '');
-      setRequiresFollow(existingAutomation.requires_follow);
+      setMessage(existingAutomation.message || '');
+      setLink1(existingAutomation.links?.[0] || '');
+      setLink2(existingAutomation.links?.[1] || '');
+      setLink3(existingAutomation.links?.[2] || '');
       
-      setFollowUpMessage(existingAutomation.follow_up_message || '');
-      setFollowUpDelayMinutes(existingAutomation.follow_up_delay_minutes ?? 5);
-      
-      setFinalMessage(existingAutomation.final_message || '');
-      setFinalLink1(existingAutomation.final_links?.[0] || '');
-      setFinalLink2(existingAutomation.final_links?.[1] || '');
-      setFinalLink3(existingAutomation.final_links?.[2] || '');
-      
-      setEmailCapture(existingAutomation.email_capture);
+      setRequiresFollow(existingAutomation.requires_follow ?? false);
+      setFollowPromptMessage(existingAutomation.follow_prompt_message || '');
       setIsActive(existingAutomation.is_active);
     } else {
       const firstLine = post.caption ? post.caption.split('\n')[0] : '';
@@ -127,18 +104,13 @@ export default function AutomationSlideOver({
       setPublicReply2('Sent you a DM! Let me know if you got it.');
       setPublicReply3('');
       
-      setOpeningDm('Hey! Thanks for commenting. Here is the link you requested: [link]');
+      setMessage('Hey! Thanks for commenting. Here is the link you requested: [link]');
+      setLink1('');
+      setLink2('');
+      setLink3('');
+      
       setRequiresFollow(false);
-      
-      setFollowUpMessage('');
-      setFollowUpDelayMinutes(5);
-      
-      setFinalMessage('');
-      setFinalLink1('');
-      setFinalLink2('');
-      setFinalLink3('');
-      
-      setEmailCapture(false);
+      setFollowPromptMessage('Please follow our profile first to get the link!');
       setIsActive(true);
     }
     setError(null);
@@ -162,7 +134,7 @@ export default function AutomationSlideOver({
       .map((r) => r.trim())
       .filter((r) => r !== '');
 
-    const parsedFinalLinks = [finalLink1, finalLink2, finalLink3]
+    const parsedLinks = [link1, link2, link3]
       .map((l) => l.trim())
       .filter((l) => l !== '');
 
@@ -175,13 +147,10 @@ export default function AutomationSlideOver({
         mediaId: post.id,
         keywords: parsedKeywords,
         publicReplyVariants: parsedPublicReplies,
-        openingDm,
+        message,
+        links: parsedLinks,
         requiresFollow,
-        followUpMessage: hasFinalStep && followUpMessage ? followUpMessage : null,
-        followUpDelayMinutes: hasFinalStep && typeof followUpDelayMinutes === 'number' ? followUpDelayMinutes : null,
-        finalMessage: hasFinalStep && finalMessage ? finalMessage : null,
-        finalLinks: hasFinalStep ? parsedFinalLinks : [],
-        emailCapture,
+        followPromptMessage: requiresFollow ? followPromptMessage : null,
         isActive,
       });
       onSuccess();
@@ -336,136 +305,110 @@ export default function AutomationSlideOver({
               </span>
             </div>
 
-            {/* 3. Opening DM */}
+            {/* 3. Message */}
             <div className="p-6 rounded-2xl border border-slate-900 bg-slate-900/10 space-y-4">
-              <label htmlFor="openingDmInput" className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Opening DM
+              <label htmlFor="messageInput" className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                Message
               </label>
               <textarea
-                id="openingDmInput"
+                id="messageInput"
                 required
-                rows={3}
-                placeholder="Compose the initial DM greeting..."
-                value={openingDm}
-                onChange={(e) => setOpeningDm(e.target.value)}
+                rows={4}
+                placeholder="Write your automated message..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-200 placeholder-slate-600 focus:border-violet-500/50 outline-none resize-none text-sm"
               />
               <span className="text-[10px] text-slate-500 block">
-                this can only contain one button OR one image, not both, per Instagram&apos;s rules
+                The core private message sent immediately as a response to the user&apos;s comment.
               </span>
             </div>
 
-            {/* 4. Require Follow Toggle */}
-            <div className="p-4 rounded-2xl border border-slate-900 bg-slate-900/10">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={requiresFollow}
-                  onChange={(e) => setRequiresFollow(e.target.checked)}
-                  className="rounded border-slate-800 bg-slate-950 text-violet-600 focus:ring-violet-500/30 w-4.5 h-4.5 cursor-pointer"
-                />
-                <div className="text-sm">
-                  <span className="font-semibold text-slate-200 group-hover:text-slate-100 transition-colors">
-                    Require a follow before sending the link
-                  </span>
-                  <p className="text-[11px] text-slate-400">Verifies follow status before trigger delivery</p>
-                </div>
-              </label>
-            </div>
-
-            {/* 5. Follow-up Message + Delay (Conditional) */}
-            {hasFinalStep && (
-              <div className="p-6 rounded-2xl border border-slate-900 bg-slate-900/10 space-y-4 border-l-2 border-l-violet-500">
-                <div className="flex items-center justify-between gap-4">
-                  <label htmlFor="delayMinutes" className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                    Follow-Up Delay
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      id="delayMinutes"
-                      type="number"
-                      min={1}
-                      required
-                      value={followUpDelayMinutes}
-                      onChange={(e) => setFollowUpDelayMinutes(e.target.value === '' ? '' : Number(e.target.value))}
-                      className="w-16 px-2 py-1 rounded border border-slate-800 bg-slate-950 text-slate-200 text-sm text-center outline-none focus:border-violet-500/50"
-                    />
-                    <span className="text-xs text-slate-400">minutes</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="followUpMsg" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                    Follow-up Message
-                  </label>
-                  <textarea
-                    id="followUpMsg"
-                    rows={2}
-                    required
-                    placeholder="Sent after the delay to nudge the contact..."
-                    value={followUpMessage}
-                    onChange={(e) => setFollowUpMessage(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-200 placeholder-slate-600 focus:border-violet-500/50 outline-none resize-none text-sm"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* 6. Final Message & Links */}
+            {/* 4. Links (max 3) */}
             <div className="p-6 rounded-2xl border border-slate-900 bg-slate-900/10 space-y-4">
-              <label htmlFor="finalMsg" className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Final Message + Links
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                Links (max 3)
               </label>
-              <textarea
-                id="finalMsg"
-                rows={3}
-                placeholder="Final message sent after keywords/email capture are met..."
-                value={finalMessage}
-                onChange={(e) => setFinalMessage(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-200 placeholder-slate-600 focus:border-violet-500/50 outline-none resize-none text-sm mb-3"
-              />
-              
               <div className="space-y-3">
                 <input
                   type="url"
-                  placeholder="Final Link 1"
-                  value={finalLink1}
-                  onChange={(e) => setFinalLink1(e.target.value)}
+                  placeholder="Link 1"
+                  value={link1}
+                  onChange={(e) => setLink1(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-200 placeholder-slate-600 focus:border-violet-500/50 outline-none text-sm"
                 />
                 <input
                   type="url"
-                  placeholder="Final Link 2"
-                  value={finalLink2}
-                  onChange={(e) => setFinalLink2(e.target.value)}
+                  placeholder="Link 2"
+                  value={link2}
+                  onChange={(e) => setLink2(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-200 placeholder-slate-600 focus:border-violet-500/50 outline-none text-sm"
                 />
                 <input
                   type="url"
-                  placeholder="Final Link 3"
-                  value={finalLink3}
-                  onChange={(e) => setFinalLink3(e.target.value)}
+                  placeholder="Link 3"
+                  value={link3}
+                  onChange={(e) => setLink3(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-200 placeholder-slate-600 focus:border-violet-500/50 outline-none text-sm"
                 />
               </div>
             </div>
 
-            {/* 7. Collect Email Toggle */}
-            <div className="p-4 rounded-2xl border border-slate-900 bg-slate-900/10">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={emailCapture}
-                  onChange={(e) => setEmailCapture(e.target.checked)}
-                  className="rounded border-slate-800 bg-slate-950 text-violet-600 focus:ring-violet-500/30 w-4.5 h-4.5 cursor-pointer"
-                />
-                <div className="text-sm">
-                  <span className="font-semibold text-slate-200 group-hover:text-slate-100 transition-colors">
-                    Collect email before sending the link
-                  </span>
-                  <p className="text-[11px] text-slate-400">Prompts contact to enter their email in the DM flow</p>
+            {/* Collapsible Advanced Section */}
+            <div className="border border-slate-900 rounded-2xl bg-slate-900/10 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="w-full px-6 py-4 flex items-center justify-between text-xs font-bold text-slate-350 uppercase tracking-wider hover:bg-slate-900/20 transition-colors outline-none"
+              >
+                <span>Advanced Options (Follow Gate)</span>
+                <svg
+                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                    showAdvanced ? 'rotate-180' : ''
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showAdvanced && (
+                <div className="p-6 border-t border-slate-900 space-y-4 bg-slate-950/40">
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={requiresFollow}
+                      onChange={(e) => setRequiresFollow(e.target.checked)}
+                      className="rounded border-slate-800 bg-slate-950 text-violet-600 focus:ring-violet-500/30 w-4.5 h-4.5 cursor-pointer"
+                    />
+                    <div className="text-sm">
+                      <span className="font-semibold text-slate-200 group-hover:text-slate-100 transition-colors">
+                        Require a follow before sending message
+                      </span>
+                      <p className="text-[11px] text-slate-400">Verifies follow status before delivering the final message</p>
+                    </div>
+                  </label>
+
+                  {requiresFollow && (
+                    <div className="pt-2">
+                      <label htmlFor="followPrompt" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                        Follow Prompt Message
+                      </label>
+                      <input
+                        id="followPrompt"
+                        type="text"
+                        required
+                        placeholder="Please follow our profile first to get the link!"
+                        value={followPromptMessage}
+                        onChange={(e) => setFollowPromptMessage(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-200 focus:border-violet-500/50 outline-none text-sm"
+                      />
+                    </div>
+                  )}
                 </div>
-              </label>
+              )}
             </div>
 
             {/* Active Toggle & Buttons */}
