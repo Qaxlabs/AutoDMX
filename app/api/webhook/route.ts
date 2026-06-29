@@ -70,16 +70,29 @@ export async function POST(request: NextRequest) {
     const entryId = entry.id; // Instagram Business Account ID
     if (!entryId) continue;
 
-    // Resolve the account from our database using the service role client
+    // Fetch the single connected account regardless of ID format (single-tenant routing)
     const { data: account, error: accountError } = await supabase
       .from('accounts')
-      .select('id')
-      .eq('ig_user_id', entryId)
+      .select('id, webhook_account_id')
+      .limit(1)
       .maybeSingle();
 
     if (accountError || !account) {
-      console.warn(`[Webhook POST] Unrecognized Instagram Business Account ID: ${entryId}`);
+      console.warn(`[Webhook POST] No connected account found in database: ${accountError?.message || 'Empty accounts table'}`);
       continue;
+    }
+
+    // Auto-record the webhook namespace ID if not already set
+    if (!account.webhook_account_id) {
+      console.log(`[Webhook POST] Storing webhook namespace ID ${entryId} on account ${account.id}`);
+      const { error: updateError } = await supabase
+        .from('accounts')
+        .update({ webhook_account_id: entryId })
+        .eq('id', account.id);
+      
+      if (updateError) {
+        console.error(`[Webhook POST] Failed to update webhook_account_id:`, updateError.message);
+      }
     }
 
     // A. Parse and process direct DMs inside entry.messaging

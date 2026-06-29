@@ -282,15 +282,15 @@ export async function handleMessageEvent(
   try {
     console.log(`[Instagram Webhook DM] Received message from ${senderId} to ${recipientId}: "${text}"`);
 
-    // 1. Resolve connected account
+    // 1. Resolve connected account (single-tenant routing)
     const { data: account, error: accountError } = await supabase
       .from('accounts')
       .select('id, encrypted_access_token')
-      .eq('ig_user_id', recipientId)
+      .limit(1)
       .maybeSingle();
 
     if (accountError || !account) {
-      console.warn(`[Instagram Webhook DM] Account not found for business ID: ${recipientId}`);
+      console.warn(`[Instagram Webhook DM] Account not found in database: ${accountError?.message || 'Empty accounts table'}`);
       return;
     }
 
