@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 interface InstagramComment {
   id: string;
   text?: string;
+  created_time?: number;
   media?: {
     id: string;
   };
@@ -78,7 +79,7 @@ export async function handleCommentTrigger(
     // 1. Fetch and decrypt the account's access token
     const { data: account, error: accountError } = await supabase
       .from('accounts')
-      .select('id, encrypted_access_token')
+      .select('id, encrypted_access_token, ig_user_id')
       .eq('id', automation.account_id)
       .single();
 
@@ -87,6 +88,16 @@ export async function handleCommentTrigger(
     }
 
     const accessToken = decrypt(account.encrypted_access_token);
+
+    // 1b. Verify comment is within 7 days (limit set by Meta)
+    if (comment.created_time) {
+      const sevenDaysInSeconds = 7 * 24 * 60 * 60;
+      const nowInSeconds = Math.floor(Date.now() / 1000);
+      if (nowInSeconds - comment.created_time > sevenDaysInSeconds) {
+        console.warn(`[Instagram Trigger] Comment ${comment.id} is older than 7 days. Skipping private reply.`);
+        return;
+      }
+    }
 
     // 2. Post a random public reply variant (if any are configured)
     const replies = automation.public_reply_variants || [];
@@ -186,12 +197,13 @@ export async function handleCommentTrigger(
         // Send DM immediately
         console.log(`[Meta API] Sending private reply for comment ${comment.id}`);
         const dmRes = await fetchWithBackoff(
-          `https://graph.instagram.com/v21.0/${comment.id}/private_replies`,
+          `https://graph.instagram.com/v21.0/${account.ig_user_id}/messages`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              message: openingDm,
+              recipient: { comment_id: comment.id },
+              message: { text: openingDm },
               access_token: accessToken,
             }),
           }
@@ -230,6 +242,7 @@ export async function handleCommentTrigger(
           payload: {
             comment_id: comment.id,
             message: openingDm,
+            comment_created_time: comment.created_time,
           },
           scheduled_for: new Date(Date.now() + 5 * 60 * 1000).toISOString(), // Schedule 5 minutes out
           sent: false,

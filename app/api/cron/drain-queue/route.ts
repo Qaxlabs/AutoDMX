@@ -112,7 +112,7 @@ async function handleCron(request: NextRequest) {
       // 2. Fetch and decrypt credentials
       const { data: account, error: accountError } = await supabase
         .from('accounts')
-        .select('encrypted_access_token')
+        .select('encrypted_access_token, ig_user_id')
         .eq('id', accountId)
         .single();
 
@@ -121,7 +121,11 @@ async function handleCron(request: NextRequest) {
       }
 
       const accessToken = decrypt(account.encrypted_access_token);
-      const payload = item.payload;
+      const payload = item.payload as {
+        comment_id: string;
+        message: string;
+        comment_created_time?: number;
+      };
       const commentId = payload.comment_id;
       const message = payload.message;
 
@@ -129,15 +133,32 @@ async function handleCron(request: NextRequest) {
         throw new Error('Queue item payload is missing comment_id or message body');
       }
 
+      // Check if the comment creation time is older than 7 days
+      if (payload.comment_created_time) {
+        const sevenDaysInSeconds = 7 * 24 * 60 * 60;
+        const nowInSeconds = Math.floor(Date.now() / 1000);
+        if (nowInSeconds - payload.comment_created_time > sevenDaysInSeconds) {
+          console.warn(`[Cron Drain] Queued comment ${commentId} is older than 7 days. Dropping from queue.`);
+          await supabase
+            .from('send_queue')
+            .update({ sent: false, attempts: 5 })
+            .eq('id', item.id);
+          
+          results.push({ id: item.id, status: 'failed_comment_too_old' });
+          continue;
+        }
+      }
+
       // 3. Post private reply to Instagram Graph API
       console.log(`[Cron Drain] Dispatching DM reply to comment ${commentId} for contact ${item.contact_id}`);
       const dmRes = await fetchWithBackoff(
-        `https://graph.instagram.com/v21.0/${commentId}/private_replies`,
+        `https://graph.instagram.com/v21.0/${account.ig_user_id}/messages`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            message,
+            recipient: { comment_id: commentId },
+            message: { text: message },
             access_token: accessToken,
           }),
         }
