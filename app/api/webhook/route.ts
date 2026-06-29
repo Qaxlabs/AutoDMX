@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
   }
 
   const entries = payload.entry || [];
+
   for (const entry of entries) {
     const entryId = entry.id; // Instagram Business Account ID
     if (!entryId) continue;
@@ -134,6 +135,24 @@ export async function POST(request: NextRequest) {
 
       const commentValue = change.value;
       if (!commentValue || !commentValue.id) continue;
+
+      // Deduplication check: Attempt to insert comment_id into processed_comments
+      const { error: insertError } = await supabase
+        .from('processed_comments')
+        .insert({ comment_id: commentValue.id });
+
+      if (insertError) {
+        if (insertError.code === '23505') {
+          // Unique constraint violation - Duplicate comment, ignore it
+          console.log(`[Webhook POST] Duplicate comment ${commentValue.id} detected, ignoring.`);
+          continue; // Skip this comment but continue processing other changes/entries
+        } else {
+          // Other DB errors (e.g. timeout, connection issue)
+          console.error(`[Webhook POST] Database error inserting comment_id ${commentValue.id}:`, insertError);
+          // Return 500 to let the provider retry later
+          return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        }
+      }
 
       const mediaId = commentValue.media?.id;
       const commentText = commentValue.text || '';
