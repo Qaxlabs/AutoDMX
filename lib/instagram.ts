@@ -95,7 +95,7 @@ export async function handleCommentTrigger(
       console.log(`[Meta API] Posting public reply variant: "${randomReply}" to comment ${comment.id}`);
       
       const replyRes = await fetchWithBackoff(
-        `https://graph.facebook.com/v19.0/${comment.id}/replies`,
+        `https://graph.instagram.com/v21.0/${comment.id}/replies`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -186,7 +186,7 @@ export async function handleCommentTrigger(
         // Send DM immediately
         console.log(`[Meta API] Sending private reply for comment ${comment.id}`);
         const dmRes = await fetchWithBackoff(
-          `https://graph.facebook.com/v19.0/${comment.id}/private_replies`,
+          `https://graph.instagram.com/v21.0/${comment.id}/private_replies`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -347,7 +347,7 @@ export async function handleMessageEvent(
     // Helper to send message and log it
     const sendDmAndLog = async (msgText: string) => {
       const dmRes = await fetchWithBackoff(
-        `https://graph.facebook.com/v19.0/me/messages`,
+        `https://graph.instagram.com/v21.0/me/messages`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -427,7 +427,7 @@ export async function handleMessageEvent(
       try {
         console.log(`[Meta API] Checking follow status for IGSID: ${senderId}`);
         const profileRes = await fetchWithBackoff(
-          `https://graph.facebook.com/v19.0/${senderId}?fields=follows_business&access_token=${accessToken}`,
+          `https://graph.instagram.com/v21.0/${senderId}?fields=follows_business&access_token=${accessToken}`,
           { method: 'GET' }
         );
         const profileData = await profileRes.json();
@@ -594,56 +594,39 @@ export async function initializeAccountIfNeeded(): Promise<{ success: boolean; e
       };
     }
 
-    // 1. Fetch linked Instagram Business Account from Facebook Pages
-    const pagesRes = await fetch(
-      `https://graph.facebook.com/v19.0/me/accounts?fields=id,instagram_business_account{id,username}&access_token=${token}`
+    // Call GET https://graph.instagram.com/v21.0/me?fields=id,username&access_token=...
+    console.log('[Auto-Init] Verifying Instagram access token with graph.instagram.com/v21.0/me...');
+    const meRes = await fetch(
+      `https://graph.instagram.com/v21.0/me?fields=id,username&access_token=${token}`
     );
-    const pagesData = await pagesRes.json();
+    const meData = await meRes.json();
 
-    if (pagesData.error) {
+    if (meData.error) {
       return {
         success: false,
-        error: `Facebook API Error: ${pagesData.error.message}`,
+        error: `Instagram API Error: ${meData.error.message}`,
       };
     }
 
-    const linkedPage = (pagesData.data as Array<{ id: string; instagram_business_account?: { id: string; username: string } }>)?.find(
-      (p) => p.instagram_business_account
-    );
-    if (!linkedPage || !linkedPage.instagram_business_account) {
+    const igUserId = meData.id;
+    const igUsername = meData.username;
+
+    if (!igUserId || !igUsername) {
       return {
         success: false,
-        error: 'No linked Instagram Creator or Business account was found on any Facebook Pages for the provided token.',
+        error: 'Instagram verification response was missing user id or username.',
       };
     }
 
-    const fbPageId = linkedPage.id;
-    const igUserId = linkedPage.instagram_business_account.id;
-    const igUsername = linkedPage.instagram_business_account.username;
-
-    // 2. Double-check token works directly on the Instagram user endpoint
-    const igRes = await fetch(
-      `https://graph.facebook.com/v19.0/${igUserId}?fields=id,username&access_token=${token}`
-    );
-    const igData = await igRes.json();
-
-    if (igData.error) {
-      return {
-        success: false,
-        error: `Instagram Verification Error: ${igData.error.message}`,
-      };
-    }
-
-    // 3. Encrypt credentials
+    // Encrypt credentials
     const encryptedToken = encrypt(token);
     const encryptedSecret = encrypt(appSecret);
 
-    // 4. Save account row to database
+    // Save account row to database
     const { error: insertError } = await supabase.from('accounts').insert({
       ig_user_id: igUserId,
       ig_username: igUsername,
       encrypted_access_token: encryptedToken,
-      fb_page_id: fbPageId,
       app_id: appId,
       encrypted_app_secret: encryptedSecret,
     });

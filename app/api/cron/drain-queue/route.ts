@@ -132,7 +132,7 @@ async function handleCron(request: NextRequest) {
       // 3. Post private reply to Instagram Graph API
       console.log(`[Cron Drain] Dispatching DM reply to comment ${commentId} for contact ${item.contact_id}`);
       const dmRes = await fetchWithBackoff(
-        `https://graph.facebook.com/v19.0/${commentId}/private_replies`,
+        `https://graph.instagram.com/v21.0/${commentId}/private_replies`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

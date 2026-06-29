@@ -121,7 +121,7 @@ export default async function Dashboard({
 
   try {
     const mediaRes = await fetch(
-      `https://graph.facebook.com/v19.0/${activeAccount.ig_user_id}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&limit=24&access_token=${decryptedToken}`,
+      `https://graph.instagram.com/v21.0/${activeAccount.ig_user_id}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&limit=24&access_token=${decryptedToken}`,
       { cache: 'no-store' }
     );
     const mediaData = await mediaRes.json();
