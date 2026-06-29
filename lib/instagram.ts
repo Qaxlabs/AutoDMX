@@ -78,7 +78,7 @@ interface DecryptedAccount {
 /**
  * Builds the final message string containing the final message and redirect-wrapped links.
  */
-async function buildFinalMessage(automation: InstagramAutomation, contactId: string): Promise<string> {
+async function buildFinalMessage(automation: InstagramAutomation): Promise<string> {
   const finalMsg = automation.final_message || '';
   const links = automation.final_links || [];
   let fullMessage = finalMsg;
@@ -386,7 +386,7 @@ export async function handleCommentTrigger(
           messageText = openingText + 'Please reply with your email address to receive the details.';
           nextStep = 'awaiting_email';
         } else {
-          const finalMsg = await buildFinalMessage(automation, contactId);
+          const finalMsg = await buildFinalMessage(automation);
           messageText = openingText + finalMsg;
           nextStep = 'completed';
         }
@@ -406,7 +406,7 @@ export async function handleCommentTrigger(
       messageText = openingText + 'Please reply with your email address to receive the details.';
       nextStep = 'awaiting_email';
     } else {
-      const finalMsg = await buildFinalMessage(automation, contactId);
+      const finalMsg = await buildFinalMessage(automation);
       messageText = openingText + finalMsg;
       nextStep = 'completed';
     }
@@ -586,7 +586,7 @@ export async function handleMessageEvent(
             .update({ current_step: 'awaiting_email' })
             .eq('id', state.id);
         } else {
-          const finalMsg = await buildFinalMessage(automation, contact.id);
+          const finalMsg = await buildFinalMessage(automation);
           await sendDmAndLog(finalMsg);
           await supabase
             .from('conversation_state')
@@ -617,7 +617,7 @@ export async function handleMessageEvent(
           .update({ email: trimmedText })
           .eq('id', contact.id);
 
-        const finalMsg = await buildFinalMessage(automation, contact.id);
+        const finalMsg = await buildFinalMessage(automation);
         await sendDmAndLog(finalMsg);
         
         await supabase
