@@ -20,7 +20,7 @@ export default function Home() {
               Dashboard
             </Link>
             <a 
-              href="https://github.com" 
+              href="https://github.com/Qaxlabs/AutoDMX" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="text-sm text-slate-400 hover:text-slate-200 transition-colors"
@@ -62,12 +62,12 @@ export default function Home() {
             Launch Dashboard
           </Link>
           <a
-            href="https://github.com"
+            href="https://github.com/Qaxlabs/AutoDMX"
             target="_blank"
             rel="noopener noreferrer"
             className="px-8 py-4 rounded-xl font-semibold bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all duration-300 text-center"
           >
-            Deploy on Netlify
+            GitHub Repository
           </a>
         </div>
 
@@ -115,7 +115,12 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-900/80 bg-slate-950/40 relative z-10 py-8 text-center text-xs text-slate-500">
+      <footer className="border-t border-slate-900/80 bg-slate-950/40 relative z-10 py-12 text-center text-xs text-slate-500">
+        <div className="flex justify-center gap-6 mb-6 text-slate-400">
+          <Link href="/privacy" className="hover:text-slate-200 transition-colors">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-slate-200 transition-colors">Terms of Service</Link>
+          <Link href="/data-deletion" className="hover:text-slate-200 transition-colors">Data Deletion</Link>
+        </div>
         <p>© {new Date().getFullYear()} AutoDMX. Built with Next.js, Supabase, and Tailwind CSS.</p>
       </footer>
     </div>
