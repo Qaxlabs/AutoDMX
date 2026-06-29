@@ -163,11 +163,16 @@ export async function POST(request: NextRequest) {
 
         // Match keywords: case-insensitive substring or empty keywords list (match all)
         const keywordsList = automation.keywords || [];
-        const matchesKeywords =
-          keywordsList.length === 0 ||
-          keywordsList.some((keyword: string) =>
+        const hasMatchAnyComment = 'match_any_comment' in automation && Boolean((automation as Record<string, unknown>).match_any_comment);
+
+        let matchesKeywords = false;
+        if (keywordsList.length === 0 || hasMatchAnyComment) {
+          matchesKeywords = true;
+        } else {
+          matchesKeywords = keywordsList.some((keyword: string) =>
             commentText.toLowerCase().includes(keyword.toLowerCase())
           );
+        }
 
         if (matchesKeywords) {
           try {
