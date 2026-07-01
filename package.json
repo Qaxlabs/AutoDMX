@@ -2,6 +2,41 @@
   "name": "autodmx",
   "version": "0.1.0",
   "private": true,
+  "description": "Open-source, self-hosted Instagram comment-to-DM automation platform.",
+  "keywords": [
+    "instagram",
+    "automation",
+    "dm",
+    "comments",
+    "marketing",
+    "lead-generation",
+    "self-hosted",
+    "nextjs",
+    "supabase",
+    "meta-graph-api"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/Qaxlabs/AutoDMX",
+  "bugs": {
+    "url": "https://github.com/Qaxlabs/AutoDMX/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Qaxlabs/AutoDMX.git"
+  },
+  "author": {
+    "name": "Qaxlabs",
+    "url": "https://github.com/Qaxlabs"
+  },
+  "contributors": [
+    {
+      "name": "Qaxlabs",
+      "url": "https://github.com/Qaxlabs"
+    }
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

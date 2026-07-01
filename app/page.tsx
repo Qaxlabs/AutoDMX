@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ContactEmail } from './_components/ContactEmail';
 
 export default function Home() {
   return (
@@ -116,10 +117,11 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-slate-900/80 bg-slate-950/40 relative z-10 py-12 text-center text-xs text-slate-500">
-        <div className="flex justify-center gap-6 mb-6 text-slate-400">
+        <div className="flex flex-wrap justify-center gap-6 mb-6 text-slate-400">
           <Link href="/privacy" className="hover:text-slate-200 transition-colors">Privacy Policy</Link>
           <Link href="/terms" className="hover:text-slate-200 transition-colors">Terms of Service</Link>
           <Link href="/data-deletion" className="hover:text-slate-200 transition-colors">Data Deletion</Link>
+          <ContactEmail className="hover:text-slate-200 transition-colors" />
         </div>
         <p>© {new Date().getFullYear()} AutoDMX. Built with Next.js, Supabase, and Tailwind CSS.</p>
       </footer>

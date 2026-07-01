@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ContactEmail, BackToHome } from '../_components/ContactEmail';
 
 export default function TermsPage() {
   return (
@@ -10,9 +11,7 @@ export default function TermsPage() {
       <div className="max-w-3xl mx-auto relative z-10">
         {/* Navigation back */}
         <div className="mb-10">
-          <Link href="/" className="text-sm font-semibold text-violet-400 hover:text-violet-300 transition-colors inline-flex items-center gap-1">
-            &larr; Back to Home
-          </Link>
+          <BackToHome />
         </div>
 
         {/* Document Card */}
@@ -44,9 +43,7 @@ export default function TermsPage() {
               </li>
               <li className="leading-relaxed">
                 <span className="font-semibold text-slate-200">Support & Feedback:</span> Contact{' '}
-                <a href="mailto:qaxilabs@gmail.com" className="text-violet-400 hover:underline">
-                  qaxilabs@gmail.com
-                </a>{' '}
+                <ContactEmail />{' '}
                 with any questions or concerns.
               </li>
             </ol>

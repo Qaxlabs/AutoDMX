@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ContactEmail, ContactBlock, BackToHome } from '../_components/ContactEmail';
 
 export default function PrivacyPage() {
   return (
@@ -10,9 +11,7 @@ export default function PrivacyPage() {
       <div className="max-w-3xl mx-auto relative z-10">
         {/* Navigation back */}
         <div className="mb-10">
-          <Link href="/" className="text-sm font-semibold text-violet-400 hover:text-violet-300 transition-colors inline-flex items-center gap-1">
-            &larr; Back to Home
-          </Link>
+          <BackToHome />
         </div>
 
         {/* Document Card */}
@@ -25,7 +24,7 @@ export default function PrivacyPage() {
           <div className="prose prose-invert max-w-none text-slate-350 text-sm leading-relaxed space-y-6">
             <p>
               AutoDMX is an open-source, self-hosted Instagram automation tool.
-              This deployment is operated by <a href="mailto:qaxilabs@gmail.com" className="text-violet-400 hover:underline">qaxilabs@gmail.com</a> for use with a single connected Instagram account.
+              This deployment is operated by <ContactEmail /> for use with a single connected Instagram account.
             </p>
 
             <hr className="border-slate-900" />
@@ -65,9 +64,7 @@ export default function PrivacyPage() {
               <h2 className="text-lg font-bold text-slate-100">5. Your rights</h2>
               <p className="text-slate-400">
                 You may request deletion of your data at any time by contacting{' '}
-                <a href="mailto:qaxilabs@gmail.com" className="text-violet-400 hover:underline">
-                  qaxilabs@gmail.com
-                </a>.
+                <ContactEmail variant="strong" />.
               </p>
             </div>
 
@@ -75,12 +72,7 @@ export default function PrivacyPage() {
 
             <div className="space-y-3">
               <h2 className="text-lg font-bold text-slate-100">Contact</h2>
-              <p className="text-slate-400">
-                Email:{' '}
-                <a href="mailto:qaxilabs@gmail.com" className="text-violet-400 hover:underline font-semibold">
-                  qaxilabs@gmail.com
-                </a>
-              </p>
+              <ContactBlock />
             </div>
           </div>
         </div>

@@ -1,0 +1,15 @@
+# CODEOWNERS
+# This file defines who is automatically requested for review on pull requests
+# that modify certain files. See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything in the repo
+*       @Qaxlabs
+
+# Core automation logic
+/lib/   @Qaxlabs
+
+# Webhook + cron routes
+/app/api/   @Qaxlabs
+
+# Database migrations
+/supabase/   @Qaxlabs

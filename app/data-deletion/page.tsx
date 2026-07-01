@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ContactEmail, BackToHome } from '../_components/ContactEmail';
 
 export default function DataDeletionPage() {
   return (
@@ -10,9 +11,7 @@ export default function DataDeletionPage() {
       <div className="max-w-3xl mx-auto relative z-10">
         {/* Navigation back */}
         <div className="mb-10">
-          <Link href="/" className="text-sm font-semibold text-violet-400 hover:text-violet-300 transition-colors inline-flex items-center gap-1">
-            &larr; Back to Home
-          </Link>
+          <BackToHome />
         </div>
 
         {/* Document Card */}
@@ -34,9 +33,7 @@ export default function DataDeletionPage() {
               <ol className="list-decimal list-inside space-y-3 text-slate-400 pl-2">
                 <li>
                   Send an email to{' '}
-                  <a href="mailto:qaxilabs@gmail.com" className="text-violet-400 hover:underline font-semibold">
-                    qaxilabs@gmail.com
-                  </a>.
+                  <ContactEmail variant="strong" />.
                 </li>
                 <li>
                   Use the subject line:{' '}
