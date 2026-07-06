@@ -33,11 +33,11 @@ type Props = {
 export default function ContactsTable({ contacts, accountId, accounts }: Props) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   // Tag input states mapped by contact ID
   const [tagInputs, setTagInputs] = useState<{ [contactId: string]: string }>({});
   const [showTagInputs, setShowTagInputs] = useState<{ [contactId: string]: boolean }>({});
-  
+
   const [isUpdating, setIsUpdating] = useState<{ [contactId: string]: boolean }>({});
 
   const activeAccount = accounts.find((a) => a.id === accountId) || accounts[0];
@@ -71,7 +71,7 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
 
     const updatedTags = [...currentTags, tagText];
     setIsUpdating({ ...isUpdating, [contactId]: true });
-    
+
     try {
       await updateContactTags(contactId, updatedTags);
       setTagInputs({ ...tagInputs, [contactId]: '' });
@@ -85,7 +85,11 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
   };
 
   // Remove a tag from a contact
-  const handleRemoveTag = async (contactId: string, currentTags: string[], tagToRemove: string) => {
+  const handleRemoveTag = async (
+    contactId: string,
+    currentTags: string[],
+    tagToRemove: string
+  ) => {
     const updatedTags = currentTags.filter((t) => t !== tagToRemove);
     setIsUpdating({ ...isUpdating, [contactId]: true });
 
@@ -111,7 +115,7 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
       'Tags',
       'Last Interaction',
     ];
-    
+
     const rows = filteredContacts.map((c) => [
       c.id,
       c.igsid,
@@ -125,12 +129,20 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
 
     const csvContent =
       'data:text/csv;charset=utf-8,' +
-      [headers.join(','), ...rows.map((r) => r.map((val) => `"${val.replace(/"/g, '""')}"`).join(','))].join('\n');
+      [
+        headers.join(','),
+        ...rows.map((r) =>
+          r.map((val) => `"${val.replace(/"/g, '""')}"`).join(',')
+        ),
+      ].join('\n');
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `leads_${activeAccount.ig_username}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      'download',
+      `leads_${activeAccount.ig_username}_${new Date().toISOString().split('T')[0]}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -139,14 +151,13 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
   return (
     <div className="space-y-6">
       {/* Controls: Switcher, Search, Export */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-slate-900/30 border border-slate-900 p-6 rounded-2xl">
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center w-full md:w-auto">
-          {/* Account Dropdown */}
-          <div className="relative">
+      <div className="flex flex-col gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-5 md:flex-row md:items-center md:justify-between">
+        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center md:w-auto">
+          <div className="relative w-full sm:w-auto">
             <select
               value={accountId}
               onChange={(e) => handleAccountChange(e.target.value)}
-              className="appearance-none bg-slate-950 text-slate-200 border border-slate-800 rounded-xl px-4 py-2.5 pr-10 focus:border-violet-500/50 outline-none text-sm cursor-pointer font-semibold"
+              className="w-full appearance-none rounded-xl border border-white/8 bg-ink-900/60 px-4 py-2.5 pr-10 text-sm font-medium text-slate-100 outline-none transition-all focus:border-brand-400/50 focus:ring-2 focus:ring-brand-400/20 sm:min-w-[200px]"
             >
               {accounts.map((a) => (
                 <option key={a.id} value={a.id}>
@@ -155,98 +166,143 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
               ))}
             </select>
             <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m6 9 6 6 6-6" />
               </svg>
             </div>
           </div>
 
-          {/* Search bar */}
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-72">
             <input
               type="text"
-              placeholder="Search by username, email, tag..."
+              placeholder="Search username, email, tag…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-950 text-slate-200 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs outline-none focus:border-violet-500/50 placeholder-slate-600"
+              className="w-full rounded-xl border border-white/8 bg-ink-900/60 py-2.5 pl-10 pr-4 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all focus:border-brand-400/50 focus:ring-2 focus:ring-brand-400/20"
             />
             <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
               </svg>
             </div>
           </div>
         </div>
 
-        {/* CSV Export Button */}
         <button
           onClick={handleExportCSV}
           disabled={filteredContacts.length === 0}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(139,92,246,0.15)]"
+          className="btn-primary px-5 py-2.5 text-sm disabled:opacity-50"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <path d="m7 10 5 5 5-5" />
+            <path d="M12 15V3" />
           </svg>
           Export CSV ({filteredContacts.length})
         </button>
       </div>
 
       {/* Leads Table Container */}
-      <div className="border border-slate-900 bg-slate-900/10 rounded-2xl overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02]">
         {filteredContacts.length === 0 ? (
-          <div className="p-16 text-center text-slate-500 text-sm">
-            <svg className="w-12 h-12 text-slate-700 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          <div className="px-6 py-16 text-center text-sm text-slate-500">
+            <svg
+              className="mx-auto mb-4 h-12 w-12 text-slate-700"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
             No contacts match the active filter criteria.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full border-collapse text-left">
               <thead>
-                <tr className="border-b border-slate-900 bg-slate-900/20 text-[10px] font-bold tracking-widest uppercase text-slate-400">
+                <tr className="border-b border-white/5 bg-white/[0.02] text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
                   <th className="px-6 py-4">User</th>
                   <th className="px-6 py-4">IGSID</th>
-                  <th className="px-6 py-4">Follows Profile</th>
-                  <th className="px-6 py-4">Email Address</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Email</th>
                   <th className="px-6 py-4">Tags</th>
-                  <th className="px-6 py-4">Last Interaction</th>
+                  <th className="px-6 py-4">Last interaction</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-900/50 text-sm text-slate-300">
+              <tbody className="divide-y divide-white/5 text-sm text-slate-200">
                 {filteredContacts.map((c) => {
                   const hasTagInput = showTagInputs[c.id] ?? false;
                   const tagInputValue = tagInputs[c.id] ?? '';
                   const loading = isUpdating[c.id] ?? false;
 
                   return (
-                    <tr key={c.id} className="hover:bg-slate-900/10 transition-colors">
+                    <tr
+                      key={c.id}
+                      className="transition-colors hover:bg-white/[0.02]"
+                    >
                       {/* User Info */}
-                      <td className="px-6 py-4 flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-violet-950 border border-violet-900 flex items-center justify-center font-bold text-violet-400 text-xs select-none">
-                          {c.username.substring(0, 2).toUpperCase()}
-                        </div>
-                        <div>
-                          <span className="font-semibold text-slate-100 block">@{c.username}</span>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/8 bg-gradient-to-br from-brand-500/30 to-accent-500/30 text-xs font-semibold text-white">
+                            {c.username.substring(0, 2).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-white">
+                            @{c.username}
+                          </span>
                         </div>
                       </td>
 
                       {/* IGSID */}
-                      <td className="px-6 py-4 text-xs text-slate-500 font-mono">{c.igsid}</td>
+                      <td className="px-6 py-4 font-mono text-xs text-slate-500">
+                        {c.igsid}
+                      </td>
 
                       {/* Follow status */}
                       <td className="px-6 py-4">
                         {c.follows_business === null ? (
-                          <span className="inline-block text-[10px] font-semibold bg-slate-900 text-slate-400 px-2 py-0.5 rounded border border-slate-800">
-                            Not Checked
+                          <span className="inline-block rounded-md border border-white/8 bg-ink-900 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
+                            Not checked
                           </span>
                         ) : c.follows_business ? (
-                          <span className="inline-block text-[10px] font-semibold bg-green-950/20 text-green-400 px-2 py-0.5 rounded border border-green-900/30">
+                          <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                             Following
                           </span>
                         ) : (
-                          <span className="inline-block text-[10px] font-semibold bg-red-950/20 text-red-400 px-2 py-0.5 rounded border border-red-900/30">
-                            Not Following
+                          <span className="inline-flex items-center gap-1.5 rounded-md border border-red-500/20 bg-red-500/10 px-2 py-0.5 text-[10px] font-semibold text-red-300">
+                            <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
+                            Not following
                           </span>
                         )}
                       </td>
@@ -254,27 +310,43 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
                       {/* Email */}
                       <td className="px-6 py-4">
                         {c.email ? (
-                          <span className="text-slate-200">{c.email}</span>
+                          <span className="text-slate-100">{c.email}</span>
                         ) : (
-                          <span className="text-slate-600 italic">None collected</span>
+                          <span className="italic text-slate-500">
+                            None collected
+                          </span>
                         )}
                       </td>
 
                       {/* Tags */}
                       <td className="px-6 py-4">
-                        <div className="flex flex-wrap items-center gap-1.5 max-w-xs">
+                        <div className="flex max-w-xs flex-wrap items-center gap-1.5">
                           {c.tags.map((tag) => (
                             <span
                               key={tag}
-                              className="inline-flex items-center gap-1 text-[10px] font-semibold bg-slate-900 text-slate-300 border border-slate-800 px-2 py-0.5 rounded"
+                              className="inline-flex items-center gap-1 rounded-md border border-white/8 bg-ink-900 px-2 py-0.5 text-[10px] font-medium text-slate-200"
                             >
                               {tag}
                               <button
-                                onClick={() => handleRemoveTag(c.id, c.tags, tag)}
+                                onClick={() =>
+                                  handleRemoveTag(c.id, c.tags, tag)
+                                }
                                 disabled={loading}
-                                className="text-slate-500 hover:text-slate-300 cursor-pointer"
+                                className="text-slate-500 transition-colors hover:text-white"
+                                aria-label={`Remove tag ${tag}`}
                               >
-                                &times;
+                                <svg
+                                  className="h-3 w-3"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M18 6 6 18" />
+                                  <path d="m6 6 12 12" />
+                                </svg>
                               </button>
                             </span>
                           ))}
@@ -296,22 +368,33 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
                                 placeholder="New tag"
                                 value={tagInputValue}
                                 onChange={(e) =>
-                                  setTagInputs({ ...tagInputs, [c.id]: e.target.value })
+                                  setTagInputs({
+                                    ...tagInputs,
+                                    [c.id]: e.target.value,
+                                  })
                                 }
                                 onBlur={() => {
-                                  // Timeout to let submission happen before blur removes it
                                   setTimeout(() => {
-                                    setShowTagInputs({ ...showTagInputs, [c.id]: false });
+                                    setShowTagInputs({
+                                      ...showTagInputs,
+                                      [c.id]: false,
+                                    });
                                   }, 200);
                                 }}
-                                className="bg-slate-950 text-xs border border-slate-800 rounded px-1.5 py-0.5 text-slate-200 outline-none focus:border-violet-500/50"
+                                className="rounded-md border border-white/8 bg-ink-900 px-1.5 py-0.5 text-xs text-slate-100 outline-none focus:border-brand-400/50"
                               />
                             </form>
                           ) : (
                             <button
-                              onClick={() => setShowTagInputs({ ...showTagInputs, [c.id]: true })}
+                              onClick={() =>
+                                setShowTagInputs({
+                                  ...showTagInputs,
+                                  [c.id]: true,
+                                })
+                              }
                               disabled={loading}
-                              className="inline-flex items-center justify-center w-5 h-5 rounded bg-slate-900 border border-slate-800 hover:border-slate-750 text-slate-400 text-xs transition-colors"
+                              className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-white/8 bg-ink-900 text-xs text-slate-400 transition-colors hover:border-white/15 hover:text-white"
+                              aria-label="Add tag"
                             >
                               +
                             </button>
@@ -321,12 +404,15 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
 
                       {/* Last Interaction */}
                       <td className="px-6 py-4 text-xs text-slate-400">
-                        {new Date(c.last_interaction_at).toLocaleString(undefined, {
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
+                        {new Date(c.last_interaction_at).toLocaleString(
+                          undefined,
+                          {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          }
+                        )}
                       </td>
                     </tr>
                   );

@@ -10,7 +10,13 @@
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres-green)](https://supabase.com/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
-The open-source, self-hosted Instagram comment-to-DM automation platform. Engage your audience, deliver lead magnets, and grow sales — straight from your comments.
+The self-hosted Instagram comment-to-DM automation platform. Engage your audience, deliver lead magnets, and grow sales — straight from your comments.
+
+Built by **[Qaxlabs](https://github.com/Qaxlabs)**. Follow along:
+[Instagram](https://instagram.com/qaxlabs) ·
+[YouTube](https://www.youtube.com/@Qax_labs) ·
+[X](https://x.com/qaxlabs) ·
+[GitHub](https://github.com/Qaxlabs/AutoDMX)
 
 [Features](#-features) • [Demo](#-demo) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](#-contributing) • [License](#-license)
 
@@ -165,7 +171,7 @@ Use the same `META_VERIFY_TOKEN` value for webhook verification.
 - **[Code of Conduct](./CODE_OF_CONDUCT.md)** — Community guidelines
 - **[Security Policy](./SECURITY.md)** — How to report vulnerabilities
 - **[Changelog](./CHANGELOG.md)** — Release history
-- **[License (MIT)](./LICENSE)** — Usage terms
+- **[License (Qaxlabs Source-Available v1.0)](./LICENSE)** — Usage terms
 
 ---
 
@@ -195,7 +201,9 @@ All Instagram access tokens are encrypted at rest using **AES-256-GCM** with a k
 
 ## 🪪 License
 
-Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for the full text.
+Distributed under the **Qaxlabs Source-Available License v1.0**. See [`LICENSE`](./LICENSE) for the full text.
+
+In short: you may use, study, and modify this Software for **personal or educational purposes**. You may **not** use it for commercial or business purposes, sell it, or run a paid service on top of it without a separate commercial license from Qaxlabs.
 
 This means you can:
 

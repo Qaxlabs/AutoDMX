@@ -20,14 +20,12 @@ interface ContactEmailProps {
  */
 export function ContactEmail({
   email,
-  operatorName,
   variant = 'default',
   className = '',
   asLink = true,
 }: ContactEmailProps) {
   const resolvedEmail =
     email ?? process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'your-contact-email@example.com';
-  const resolvedName = operatorName ?? process.env.OPERATOR_NAME ?? null;
 
   const linkClass =
     variant === 'strong'
@@ -35,12 +33,6 @@ export function ContactEmail({
       : variant === 'subtle'
         ? 'text-violet-400/80 hover:underline'
         : 'text-violet-400 hover:underline';
-
-  const content = (
-    <>
-      {resolvedName ? <span className={linkClass}>{resolvedEmail}</span> : resolvedEmail}
-    </>
-  );
 
   if (!asLink) {
     return <span className={className}>{resolvedEmail}</span>;

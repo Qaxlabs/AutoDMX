@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { decrypt } from '@/lib/crypto';
 import { initializeAccountIfNeeded } from '@/lib/instagram';
 import DashboardGrid from './DashboardGrid';
+import { AppShell } from '../_components/AppShell';
 
 type Post = {
   id: string;
@@ -36,9 +37,9 @@ export default async function Dashboard({
 
   if (accountsError) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-6 text-center">
-        <h1 className="text-xl font-bold text-red-400">Database Error</h1>
-        <p className="text-slate-400 mt-2">{accountsError.message}</p>
+      <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
+        <h1 className="text-xl font-semibold text-red-400">Database error</h1>
+        <p className="mt-2 text-sm text-slate-400">{accountsError.message}</p>
       </div>
     );
   }
@@ -46,45 +47,67 @@ export default async function Dashboard({
   // Handle empty state (or initialization failure)
   if (!accounts || accounts.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col">
-        <header className="border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <span className="text-xl font-bold bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-              AutoDMX
-            </span>
-          </div>
-        </header>
-
-        <main className="max-w-7xl mx-auto px-6 py-24 flex-1 flex flex-col justify-center items-center text-center relative z-10">
-          <div className="absolute top-[20%] left-[30%] w-[40%] h-[40%] rounded-full bg-violet-900/10 blur-[120px] pointer-events-none" />
-
+      <AppShell variant="dashboard" activeNav="dashboard">
+        <div className="mx-auto flex max-w-3xl flex-col items-center px-5 py-24 text-center sm:px-8">
           {initError ? (
-            <div className="mb-8 p-8 rounded-2xl border border-red-500/30 bg-red-950/20 text-red-400 text-sm flex flex-col items-center gap-3 max-w-xl text-center">
-              <svg className="w-12 h-12 text-red-500 mb-2 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-8 text-sm">
+              <svg
+                className="mx-auto mb-4 h-10 w-10 text-red-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+                <path d="M12 9v4" />
+                <path d="M12 17h.01" />
               </svg>
-              <h3 className="text-lg font-bold text-slate-200">Instagram connection failed</h3>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed">{initError}</p>
-              <p className="text-xs text-slate-500 mt-4 leading-relaxed">
-                Please configure <code className="bg-slate-900 px-1.5 py-0.5 rounded text-violet-400 font-mono">META_INITIAL_ACCESS_TOKEN</code>, <code className="bg-slate-900 px-1.5 py-0.5 rounded text-violet-400 font-mono">META_APP_ID</code>, and <code className="bg-slate-900 px-1.5 py-0.5 rounded text-violet-400 font-mono">META_APP_SECRET</code> in <code className="bg-slate-900 px-1.5 py-0.5 rounded text-slate-500 font-mono">.env.local</code> (or environment variables) and reload the dashboard.
+              <h3 className="text-lg font-semibold text-white">
+                Instagram connection failed
+              </h3>
+              <p className="mt-1 text-xs text-slate-400">{initError}</p>
+              <p className="mt-4 text-xs leading-relaxed text-slate-500">
+                Please configure{' '}
+                <code className="rounded bg-ink-900 px-1.5 py-0.5 font-mono text-brand-300">
+                  META_INITIAL_ACCESS_TOKEN
+                </code>
+                ,{' '}
+                <code className="rounded bg-ink-900 px-1.5 py-0.5 font-mono text-brand-300">
+                  META_APP_ID
+                </code>
+                , and{' '}
+                <code className="rounded bg-ink-900 px-1.5 py-0.5 font-mono text-brand-300">
+                  META_APP_SECRET
+                </code>{' '}
+                in <code className="font-mono text-slate-400">.env.local</code>{' '}
+                and reload the dashboard.
               </p>
             </div>
           ) : (
             <div className="flex flex-col items-center">
-              <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-6">
-                <svg className="w-8 h-8 text-violet-400 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.04]">
+                <svg
+                  className="h-7 w-7 animate-spin text-brand-300"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                >
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-extrabold tracking-tight">No Connected Accounts</h2>
-              <p className="text-sm text-slate-400 max-w-sm mt-2 mb-8 leading-relaxed">
-                Setting up the initial Instagram account automatically. Please wait...
+              <h2 className="text-2xl font-semibold tracking-tight text-white">
+                Setting things up
+              </h2>
+              <p className="mt-2 max-w-sm text-sm text-slate-400">
+                Connecting your initial Instagram account. One moment…
               </p>
             </div>
           )}
-        </main>
-      </div>
+        </div>
+      </AppShell>
     );
   }
 
@@ -98,13 +121,23 @@ export default async function Dashboard({
     decryptedToken = decrypt(activeAccount.encrypted_access_token);
   } catch {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-6 text-center">
-        <h1 className="text-xl font-bold text-red-400">Decryption Error</h1>
-        <p className="text-slate-400 mt-2">Failed to decrypt Instagram access token. Try reconnecting your account.</p>
-        <Link href="/dashboard/settings" className="mt-6 text-sm text-violet-400 hover:underline">
-          Go to Settings
-        </Link>
-      </div>
+      <AppShell variant="dashboard" activeNav="dashboard">
+        <div className="mx-auto flex max-w-md flex-col items-center px-5 py-24 text-center">
+          <h1 className="text-xl font-semibold text-red-400">
+            Decryption error
+          </h1>
+          <p className="mt-2 text-sm text-slate-400">
+            Failed to decrypt Instagram access token. Try reconnecting your
+            account.
+          </p>
+          <Link
+            href="/dashboard/settings"
+            className="btn-primary mt-6 px-5 py-2.5 text-sm"
+          >
+            Go to settings
+          </Link>
+        </div>
+      </AppShell>
     );
   }
 
@@ -137,65 +170,43 @@ export default async function Dashboard({
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans">
-      {/* Background Glow */}
-      <div className="absolute top-0 right-0 w-[30%] h-[30%] rounded-full bg-blue-900/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[30%] h-[30%] rounded-full bg-violet-900/10 blur-[120px] pointer-events-none" />
+    <AppShell variant="dashboard" activeNav="dashboard">
+      <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+        <PageHeader
+          title="Overview"
+          subtitle="Select a post or reel to set up automated comment-to-DM rules."
+        />
 
-      {/* Header */}
-      <header className="border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="text-xl font-bold bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-              AutoDMX
-            </Link>
-            <span className="text-slate-700">|</span>
-            <span className="text-sm font-medium text-slate-300">Dashboard</span>
-            <span className="text-slate-700">|</span>
-            <Link href="/dashboard/contacts" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">
-              Contacts
-            </Link>
-            <span className="text-slate-700">|</span>
-            <Link href="/dashboard/analytics" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">
-              Analytics
-            </Link>
-            <span className="text-slate-700">|</span>
-            <Link href="/dashboard/settings" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">
-              Settings
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" title="System Status: Online" />
-            <span className="text-xs text-slate-400">System Online</span>
-          </div>
-        </div>
-      </header>
-
-      {/* Dashboard Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-12 relative z-10">
-        {/* Page Title */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-extrabold text-slate-100 tracking-tight">Overview</h1>
-          <p className="text-sm text-slate-400 mt-1">Select a post or reel to set up automated private comment replies.</p>
-        </div>
-
-        {/* API Error Warning */}
         {apiError && (
-          <div className="mb-8 p-4 rounded-xl border border-red-500/30 bg-red-950/20 text-red-400 text-sm flex items-start gap-3 max-w-4xl">
-            <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          <div className="mb-8 flex items-start gap-3 rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-300">
+            <svg
+              className="mt-0.5 h-5 w-5 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+              <path d="M12 9v4" />
+              <path d="M12 17h.01" />
             </svg>
             <div>
-              <h4 className="font-bold">Failed to sync with Instagram</h4>
-              <p className="text-xs text-slate-400 mt-1">{apiError}</p>
-              <Link href="/dashboard/settings" className="mt-3 inline-block text-xs font-semibold text-violet-400 hover:underline">
-                Update credentials in Settings &rarr;
+              <h4 className="font-semibold text-white">
+                Failed to sync with Instagram
+              </h4>
+              <p className="mt-1 text-xs text-slate-400">{apiError}</p>
+              <Link
+                href="/dashboard/settings"
+                className="mt-3 inline-block text-xs font-semibold text-brand-300 hover:text-brand-200"
+              >
+                Update credentials in settings →
               </Link>
             </div>
           </div>
         )}
 
-        {/* Media Grid Component */}
         {!apiError && (
           <DashboardGrid
             media={media}
@@ -208,12 +219,24 @@ export default async function Dashboard({
             }))}
           />
         )}
-      </main>
+      </div>
+    </AppShell>
+  );
+}
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 py-6 text-center text-xs text-slate-500 mt-20">
-        <p>© {new Date().getFullYear()} AutoDMX. Dashboard Area.</p>
-      </footer>
+function PageHeader({
+  title,
+  subtitle,
+}: {
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <div className="mb-10">
+      <h1 className="text-3xl font-semibold tracking-tight text-white">
+        {title}
+      </h1>
+      <p className="mt-1 text-sm text-slate-400">{subtitle}</p>
     </div>
   );
 }

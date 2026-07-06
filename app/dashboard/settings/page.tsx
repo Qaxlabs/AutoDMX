@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
+import { AppShell } from '../../_components/AppShell';
+import { SocialLinks } from '../../_components/SocialLinks';
 
 export default async function SettingsPage({
   searchParams,
@@ -15,95 +17,104 @@ export default async function SettingsPage({
     .order('created_at', { ascending: false });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans">
-      {/* Background Glow */}
-      <div className="absolute top-0 right-0 w-[30%] h-[30%] rounded-full bg-blue-900/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[30%] h-[30%] rounded-full bg-violet-900/10 blur-[120px] pointer-events-none" />
-
-      {/* Header */}
-      <header className="border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="text-xl font-bold bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-              AutoDMX
-            </Link>
-            <span className="text-slate-700">|</span>
-            <Link href="/dashboard" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">
-              Dashboard
-            </Link>
-            <span className="text-slate-700">|</span>
-            <Link href="/dashboard/contacts" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">
-              Contacts
-            </Link>
-            <span className="text-slate-700">|</span>
-            <Link href="/dashboard/analytics" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">
-              Analytics
-            </Link>
-            <span className="text-slate-700">|</span>
-            <span className="text-sm font-medium text-slate-300">Settings</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" title="System Status: Online" />
-            <span className="text-xs text-slate-400">System Online</span>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12 relative z-10">
-        {/* Page Title */}
-        <div className="mb-10 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-extrabold text-slate-100 tracking-tight">Settings</h1>
-            <p className="text-sm text-slate-400 mt-1">Configure your system preferences and integrations.</p>
-          </div>
+    <AppShell variant="dashboard" activeNav="settings">
+      <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14">
+        <div className="mb-10">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
+            Workspace
+          </p>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-white">
+            Settings
+          </h1>
+          <p className="mt-1 text-sm text-slate-400">
+            Your connected accounts, integrations, and the team behind
+            AutoDMX.
+          </p>
         </div>
 
         {searchParams.error && (
-          <div className="mb-8 p-4 rounded-xl border border-red-500/30 bg-red-950/20 text-red-400 text-sm flex items-start gap-2">
-            <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          <div className="mb-8 flex items-start gap-2 rounded-xl border border-red-500/20 bg-red-500/5 p-3.5 text-sm text-red-300">
+            <svg
+              className="mt-0.5 h-4 w-4 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 8v4" />
+              <path d="M12 16h.01" />
             </svg>
             <span>{decodeURIComponent(searchParams.error)}</span>
           </div>
         )}
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Connected Accounts List */}
-          <div className="p-8 rounded-2xl border border-slate-900 bg-slate-900/20 backdrop-blur-sm">
-            <h2 className="text-xl font-bold text-slate-100 mb-6">Connected Instagram Accounts</h2>
+          <section className="overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02]">
+            <header className="flex items-center justify-between border-b border-white/5 p-5">
+              <div>
+                <h2 className="text-base font-semibold text-white">
+                  Connected Instagram accounts
+                </h2>
+                <p className="mt-0.5 text-xs text-slate-400">
+                  Meta tokens are encrypted with AES-256-GCM at rest.
+                </p>
+              </div>
+              <span className="rounded-full border border-white/8 bg-ink-900 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-300">
+                {accounts?.length ?? 0} active
+              </span>
+            </header>
 
             {!accounts || accounts.length === 0 ? (
-              <div className="text-center py-12 border border-dashed border-slate-800 rounded-xl text-slate-500">
-                <p className="font-semibold text-slate-400 mb-1">No Instagram accounts connected yet.</p>
-                <p className="text-xs text-slate-600 max-w-sm mx-auto">
-                  Provide valid Meta Graph API keys in the environment variables to initiate your first account connection automatically.
+              <div className="m-5 rounded-xl border border-dashed border-white/8 bg-ink-900/40 px-6 py-12 text-center text-sm text-slate-500">
+                <p className="font-semibold text-slate-300">
+                  No Instagram accounts connected yet.
+                </p>
+                <p className="mx-auto mt-1 max-w-sm text-xs text-slate-500">
+                  Provide valid Meta Graph API keys in the environment variables
+                  to initiate your first account connection automatically.
                 </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full border-collapse text-left">
                   <thead>
-                    <tr className="border-b border-slate-900 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                      <th className="pb-4 pt-2 px-4">IG Username</th>
-                      <th className="pb-4 pt-2 px-4">IG User ID</th>
-                      <th className="pb-4 pt-2 px-4">Meta App ID</th>
-                      <th className="pb-4 pt-2 px-4">Date Connected</th>
+                    <tr className="border-b border-white/5 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      <th className="px-6 py-3.5">IG Username</th>
+                      <th className="px-6 py-3.5">IG User ID</th>
+                      <th className="px-6 py-3.5">Meta App ID</th>
+                      <th className="px-6 py-3.5">Date connected</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-900 text-sm">
+                  <tbody className="divide-y divide-white/5 text-sm text-slate-200">
                     {accounts.map((account) => (
-                      <tr key={account.id} className="hover:bg-slate-900/10 transition-colors">
-                        <td className="py-4 px-4 font-semibold text-slate-200">
-                          <span className="inline-flex items-center gap-1.5">
-                            <span className="w-2.5 h-2.5 rounded-full bg-violet-400 animate-pulse" />
+                      <tr
+                        key={account.id}
+                        className="transition-colors hover:bg-white/[0.02]"
+                      >
+                        <td className="px-6 py-4 font-medium text-white">
+                          <span className="inline-flex items-center gap-2">
+                            <span className="relative flex h-2 w-2">
+                              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                            </span>
                             @{account.ig_username}
                           </span>
                         </td>
-                        <td className="py-4 px-4 font-mono text-xs text-slate-400">{account.ig_user_id}</td>
-                        <td className="py-4 px-4 font-mono text-xs text-slate-400">{account.app_id || 'N/A'}</td>
-                        <td className="py-4 px-4 text-slate-400">
-                          {new Date(account.created_at).toLocaleDateString()}
+                        <td className="px-6 py-4 font-mono text-xs text-slate-400">
+                          {account.ig_user_id}
+                        </td>
+                        <td className="px-6 py-4 font-mono text-xs text-slate-400">
+                          {account.app_id || 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 text-slate-400">
+                          {new Date(account.created_at).toLocaleDateString(
+                            undefined,
+                            { year: 'numeric', month: 'short', day: 'numeric' }
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -111,14 +122,83 @@ export default async function SettingsPage({
                 </table>
               </div>
             )}
-          </div>
-        </div>
-      </main>
+          </section>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 py-6 text-center text-xs text-slate-500 mt-20">
-        <p>© {new Date().getFullYear()} AutoDMX. Settings Area.</p>
-      </footer>
-    </div>
+          {/* Environment / setup guide */}
+          <section className="overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02]">
+            <header className="border-b border-white/5 p-5">
+              <h2 className="text-base font-semibold text-white">
+                Meta API credentials
+              </h2>
+              <p className="mt-0.5 text-xs text-slate-400">
+                Set these in <code className="font-mono text-slate-300">.env.local</code>{' '}
+                and reload the dashboard.
+              </p>
+            </header>
+            <div className="grid gap-2 p-5 sm:grid-cols-3">
+              {[
+                { name: 'META_APP_ID', desc: 'Your Meta app ID' },
+                { name: 'META_APP_SECRET', desc: 'Your Meta app secret' },
+                {
+                  name: 'META_INITIAL_ACCESS_TOKEN',
+                  desc: 'A long-lived user token',
+                },
+              ].map((v) => (
+                <div
+                  key={v.name}
+                  className="rounded-xl border border-white/8 bg-ink-900/60 p-3.5"
+                >
+                  <code className="text-xs font-mono text-brand-300">
+                    {v.name}
+                  </code>
+                  <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                    {v.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* About / community */}
+          <section className="overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02]">
+            <header className="border-b border-white/5 p-5">
+              <h2 className="text-base font-semibold text-white">
+                About & community
+              </h2>
+              <p className="mt-0.5 text-xs text-slate-400">
+                AutoDMX is built and maintained by Qaxlabs.
+              </p>
+            </header>
+            <div className="space-y-4 p-5">
+              <p className="text-sm leading-relaxed text-slate-300">
+                Follow for tutorials, behind-the-scenes updates, and to get
+                notified when new features ship.
+              </p>
+              <SocialLinks />
+              <div className="flex flex-wrap gap-3 pt-1">
+                <Link
+                  href="/privacy"
+                  className="btn-secondary px-3.5 py-2 text-xs"
+                >
+                  Privacy policy
+                </Link>
+                <Link
+                  href="/terms"
+                  className="btn-secondary px-3.5 py-2 text-xs"
+                >
+                  Terms of service
+                </Link>
+                <Link
+                  href="/data-deletion"
+                  className="btn-secondary px-3.5 py-2 text-xs"
+                >
+                  Data deletion
+                </Link>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </AppShell>
   );
 }

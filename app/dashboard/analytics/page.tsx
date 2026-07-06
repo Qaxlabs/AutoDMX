@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
+import { AppShell } from '../../_components/AppShell';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,36 +38,37 @@ export default async function AnalyticsPage({
     // Handle empty accounts state
     if (!accounts || accounts.length === 0) {
       return (
-        <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col">
-          <header className="border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
-            <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-              <span className="text-xl font-bold bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-                AutoDMX
-              </span>
-            </div>
-          </header>
-
-          <main className="max-w-7xl mx-auto px-6 py-24 flex-1 flex flex-col justify-center items-center text-center relative z-10">
-            <div className="absolute top-[20%] left-[30%] w-[40%] h-[40%] rounded-full bg-violet-900/10 blur-[120px] pointer-events-none" />
-            
-            <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-6">
-              <svg className="w-8 h-8 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+        <AppShell variant="dashboard" activeNav="analytics">
+          <div className="mx-auto flex max-w-3xl flex-col items-center px-5 py-24 text-center sm:px-8">
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.04]">
+              <svg
+                className="h-7 w-7 text-brand-300"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 3v18h18" />
+                <path d="m7 14 4-4 4 4 5-6" />
               </svg>
             </div>
-
-            <h2 className="text-2xl font-extrabold tracking-tight">No Connected Accounts</h2>
-            <p className="text-sm text-slate-400 max-w-sm mt-2 mb-8 leading-relaxed">
-              Please connect your Instagram Creator or Business account in settings to start viewing analytics.
+            <h2 className="text-2xl font-semibold tracking-tight text-white">
+              No connected accounts
+            </h2>
+            <p className="mt-2 max-w-sm text-sm text-slate-400">
+              Connect an Instagram Creator or Business account in settings to
+              start seeing analytics.
             </p>
             <Link
               href="/dashboard/settings"
-              className="px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white transition-all duration-300 shadow-[0_0_20px_rgba(139,92,246,0.2)]"
+              className="btn-primary mt-6 px-5 py-2.5 text-sm"
             >
-              Go to Settings
+              Go to settings
             </Link>
-          </main>
-        </div>
+          </div>
+        </AppShell>
       );
     }
 
@@ -85,7 +87,9 @@ export default async function AnalyticsPage({
       .eq('account_id', activeAccount.id);
 
     if (automationsError) {
-      throw new Error(`Database Error fetching automations: ${automationsError.message}`);
+      throw new Error(
+        `Database Error fetching automations: ${automationsError.message}`
+      );
     }
 
     const typedAutomations = automations || [];
@@ -118,7 +122,10 @@ export default async function AnalyticsPage({
         .in('automation_id', automationIds);
 
       if (logsError) {
-        console.error('[Analytics Server Error] Failed to fetch message logs:', logsError.message);
+        console.error(
+          '[Analytics Server Error] Failed to fetch message logs:',
+          logsError.message
+        );
       } else if (Array.isArray(logs)) {
         logs.forEach((log) => {
           if (!log || !log.automation_id) return;
@@ -148,7 +155,10 @@ export default async function AnalyticsPage({
         .in('automation_id', automationIds);
 
       if (clicksError) {
-        console.error('[Analytics Server Error] Failed to fetch link clicks:', clicksError.message);
+        console.error(
+          '[Analytics Server Error] Failed to fetch link clicks:',
+          clicksError.message
+        );
       } else if (Array.isArray(clicksData)) {
         clicksData.forEach((click) => {
           if (!click || !click.automation_id) return;
@@ -164,56 +174,36 @@ export default async function AnalyticsPage({
     // Calculate follow pass rate average safely
     const totalFollowChecks = totalFollowPassed + totalFollowFailed;
     const aggregateFollowRate =
-      totalFollowChecks > 0 ? Math.round((totalFollowPassed / totalFollowChecks) * 100) : 100;
+      totalFollowChecks > 0
+        ? Math.round((totalFollowPassed / totalFollowChecks) * 100)
+        : 100;
 
-    const hasActivity = totalComments > 0 || totalDmsOpened > 0 || totalClicks > 0 || totalFollowPassed > 0 || totalFollowFailed > 0;
+    const hasActivity =
+      totalComments > 0 ||
+      totalDmsOpened > 0 ||
+      totalClicks > 0 ||
+      totalFollowPassed > 0 ||
+      totalFollowFailed > 0;
 
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans">
-        {/* Background Glow */}
-        <div className="absolute top-0 right-0 w-[30%] h-[30%] rounded-full bg-blue-900/10 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[30%] h-[30%] rounded-full bg-violet-900/10 blur-[120px] pointer-events-none" />
-
-        {/* Header */}
-        <header className="border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-xl font-bold bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-                AutoDMX
-              </Link>
-              <span className="text-slate-700">|</span>
-              <Link href="/dashboard" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">
-                Dashboard
-              </Link>
-              <span className="text-slate-700">|</span>
-              <Link href="/dashboard/contacts" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">
-                Contacts
-              </Link>
-              <span className="text-slate-700">|</span>
-              <span className="text-sm font-medium text-slate-300">Analytics</span>
-              <span className="text-slate-700">|</span>
-              <Link href="/dashboard/settings" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">
-                Settings
-              </Link>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" title="System Status: Online" />
-              <span className="text-xs text-slate-400">System Online</span>
-            </div>
-          </div>
-        </header>
-
-        {/* Analytics Main Content */}
-        <main className="max-w-7xl mx-auto px-6 py-12 relative z-10">
+      <AppShell variant="dashboard" activeNav="analytics">
+        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
           {/* Page Title & Account Switcher */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-center mb-12">
+          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-100 tracking-tight">Analytics</h1>
-              <p className="text-sm text-slate-400 mt-1">Track trigger counts, link clicks, and conversion rates.</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
+                Performance
+              </p>
+              <h1 className="mt-1 text-3xl font-semibold tracking-tight text-white">
+                Analytics
+              </h1>
+              <p className="mt-1 text-sm text-slate-400">
+                Trigger counts, link clicks, and conversion rates per
+                automation.
+              </p>
             </div>
 
-            {/* Account Dropdown */}
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <select
                 defaultValue={activeAccount.id}
                 onChange={(e) => {
@@ -221,7 +211,7 @@ export default async function AnalyticsPage({
                   url.searchParams.set('accountId', e.target.value);
                   window.location.href = url.toString();
                 }}
-                className="appearance-none bg-slate-900 text-slate-200 border border-slate-800 rounded-xl px-4 py-2.5 pr-10 focus:border-violet-500/50 outline-none text-sm cursor-pointer font-semibold"
+                className="w-full appearance-none rounded-xl border border-white/8 bg-ink-900/60 px-4 py-2.5 pr-10 text-sm font-medium text-slate-100 outline-none transition-all focus:border-brand-400/50 focus:ring-2 focus:ring-brand-400/20 sm:min-w-[200px]"
               >
                 {accounts.map((a) => (
                   <option key={a.id} value={a.id}>
@@ -230,105 +220,137 @@ export default async function AnalyticsPage({
                 ))}
               </select>
               <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m6 9 6 6 6-6" />
                 </svg>
               </div>
             </div>
           </div>
 
           {/* Aggregates Overview Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {/* Card 1 */}
-            <div className="bg-slate-900/20 border border-slate-900 p-6 rounded-2xl">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Comments Received</span>
-              <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-3xl font-extrabold text-slate-100">{totalComments}</span>
-              </div>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-slate-900/20 border border-slate-900 p-6 rounded-2xl">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">DMs Acknowledged</span>
-              <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-3xl font-extrabold text-slate-100">{totalDmsOpened}</span>
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-slate-900/20 border border-slate-900 p-6 rounded-2xl">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Follow Pass Rate</span>
-              <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-3xl font-extrabold text-slate-100">
-                  {totalFollowChecks > 0 ? `${aggregateFollowRate}%` : '100%'}
-                </span>
-              </div>
-            </div>
-
-            {/* Card 4 */}
-            <div className="bg-slate-900/20 border border-slate-900 p-6 rounded-2xl">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Total Link Clicks</span>
-              <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-3xl font-extrabold text-slate-100">{totalClicks}</span>
-              </div>
-            </div>
+          <div className="mb-12 grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <MetricCard
+              label="Comments received"
+              value={totalComments}
+              accent="from-brand-500/30 to-brand-500/0"
+            />
+            <MetricCard
+              label="DMs acknowledged"
+              value={totalDmsOpened}
+              accent="from-cyan-400/30 to-cyan-400/0"
+            />
+            <MetricCard
+              label="Follow pass rate"
+              value={
+                totalFollowChecks > 0 ? `${aggregateFollowRate}%` : '100%'
+              }
+              accent="from-emerald-400/30 to-emerald-400/0"
+            />
+            <MetricCard
+              label="Total link clicks"
+              value={totalClicks}
+              accent="from-accent-500/30 to-accent-500/0"
+            />
           </div>
 
           {/* Automations Performance Table / Empty State */}
           {!hasActivity ? (
-            <div className="text-center py-20 px-6 border border-dashed border-slate-800 bg-slate-900/5 rounded-2xl text-slate-500 max-w-4xl mx-auto">
-              <svg className="w-12 h-12 text-slate-700 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+            <div className="mx-auto max-w-4xl rounded-3xl border border-dashed border-white/8 bg-white/[0.015] px-6 py-20 text-center text-slate-500">
+              <svg
+                className="mx-auto mb-4 h-12 w-12 text-slate-700"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 3v18h18" />
+                <path d="m7 14 4-4 4 4 5-6" />
               </svg>
-              <h3 className="text-lg font-bold text-slate-300">No activity yet</h3>
-              <p className="text-xs text-slate-500 mt-2 max-w-md mx-auto leading-relaxed">
-                Once comments are detected and automations trigger responses or track link clicks, your analytics stats will appear here.
+              <h3 className="text-lg font-semibold text-slate-200">
+                No activity yet
+              </h3>
+              <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed">
+                Once comments are detected and automations trigger responses or
+                track link clicks, your analytics stats will appear here.
               </p>
             </div>
           ) : (
-            <div className="border border-slate-900 bg-slate-900/10 rounded-2xl overflow-hidden">
-              <div className="p-6 border-b border-slate-900 bg-slate-900/20">
-                <h3 className="text-lg font-bold text-slate-200">Automation Performance</h3>
-                <p className="text-xs text-slate-500 mt-1">Detailed breakdown of conversions per rule.</p>
+            <div className="overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02]">
+              <div className="border-b border-white/5 bg-white/[0.02] p-5">
+                <h3 className="text-base font-semibold text-white">
+                  Automation performance
+                </h3>
+                <p className="mt-0.5 text-xs text-slate-500">
+                  Detailed breakdown of conversions per rule.
+                </p>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full border-collapse text-left">
                   <thead>
-                    <tr className="border-b border-slate-900 bg-slate-900/20 text-[10px] font-bold tracking-widest uppercase text-slate-400">
-                      <th className="px-6 py-4">Automation Name</th>
+                    <tr className="border-b border-white/5 bg-white/[0.02] text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      <th className="px-6 py-4">Automation</th>
                       <th className="px-6 py-4">Scope / Post</th>
                       <th className="px-6 py-4 text-center">Comments</th>
-                      <th className="px-6 py-4 text-center">DMs Opened</th>
-                      <th className="px-6 py-4 text-center">Follow Rate</th>
-                      <th className="px-6 py-4 text-center">Link Clicks</th>
+                      <th className="px-6 py-4 text-center">DMs</th>
+                      <th className="px-6 py-4 text-center">Follow rate</th>
+                      <th className="px-6 py-4 text-center">Clicks</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-900/50 text-sm text-slate-300">
+                  <tbody className="divide-y divide-white/5 text-sm text-slate-200">
                     {statsList.map((stat) => {
-                      const checks = stat.followPassed + stat.followFailed;
-                      const followRate = checks > 0 ? Math.round((stat.followPassed / checks) * 100) : 100;
+                      const checks =
+                        stat.followPassed + stat.followFailed;
+                      const followRate =
+                        checks > 0
+                          ? Math.round((stat.followPassed / checks) * 100)
+                          : null;
 
                       return (
-                        <tr key={stat.id} className="hover:bg-slate-900/10 transition-colors">
-                          <td className="px-6 py-4 font-semibold text-slate-200">{stat.name}</td>
+                        <tr
+                          key={stat.id}
+                          className="transition-colors hover:bg-white/[0.02]"
+                        >
+                          <td className="px-6 py-4 font-medium text-white">
+                            {stat.name}
+                          </td>
                           <td className="px-6 py-4 text-xs">
                             {stat.media_scope === 'any' ? (
-                              <span className="inline-block bg-slate-900 text-slate-400 px-2 py-0.5 rounded border border-slate-800">
-                                Any Post
+                              <span className="inline-block rounded-md border border-white/8 bg-ink-900 px-2 py-0.5 text-slate-300">
+                                Any post
                               </span>
                             ) : (
-                              <span className="inline-block bg-slate-900/50 text-violet-400 px-2 py-0.5 rounded border border-violet-950/30 font-mono">
-                                Post: {stat.media_id}
+                              <span className="inline-block rounded-md border border-brand-500/20 bg-brand-500/10 px-2 py-0.5 font-mono text-[11px] text-brand-300">
+                                {stat.media_id?.slice(0, 12) ?? '—'}
                               </span>
                             )}
                           </td>
-                          <td className="px-6 py-4 text-center font-bold text-slate-100">{stat.comments}</td>
-                          <td className="px-6 py-4 text-center font-bold text-slate-100">{stat.dmsOpened}</td>
-                          <td className="px-6 py-4 text-center font-bold text-slate-100">
-                            {checks > 0 ? `${followRate}%` : <span className="text-slate-500 font-normal">N/A</span>}
+                          <td className="px-6 py-4 text-center font-semibold text-white">
+                            {stat.comments}
                           </td>
-                          <td className="px-6 py-4 text-center font-bold text-slate-100">{stat.clicks}</td>
+                          <td className="px-6 py-4 text-center font-semibold text-white">
+                            {stat.dmsOpened}
+                          </td>
+                          <td className="px-6 py-4 text-center font-semibold text-white">
+                            {followRate === null ? (
+                              <span className="text-slate-500">N/A</span>
+                            ) : (
+                              `${followRate}%`
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-center font-semibold text-white">
+                            {stat.clicks}
+                          </td>
                         </tr>
                       );
                     })}
@@ -337,42 +359,81 @@ export default async function AnalyticsPage({
               </div>
             </div>
           )}
-        </main>
-
-        {/* Footer */}
-        <footer className="border-t border-slate-900 py-6 text-center text-xs text-slate-500 mt-20">
-          <p>© {new Date().getFullYear()} AutoDMX. Analytics Hub.</p>
-        </footer>
-      </div>
+        </div>
+      </AppShell>
     );
   } catch (err) {
-    if (err && typeof err === 'object' && ('digest' in err || 'message' in err)) {
+    if (
+      err &&
+      typeof err === 'object' &&
+      ('digest' in err || 'message' in err)
+    ) {
       const errorObj = err as { digest?: string; message?: string };
-      if (errorObj.digest === 'DYNAMIC_SERVER_USAGE' || errorObj.message?.includes('Dynamic server usage')) {
+      if (
+        errorObj.digest === 'DYNAMIC_SERVER_USAGE' ||
+        errorObj.message?.includes('Dynamic server usage')
+      ) {
         throw err;
       }
     }
     console.error('[Analytics Page Server Exception]', err);
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-6 text-center">
-        <div className="max-w-md p-8 rounded-2xl border border-red-950/30 bg-red-950/10 backdrop-blur-md">
-          <svg className="w-12 h-12 text-red-500 mx-auto mb-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
+        <div className="max-w-md rounded-2xl border border-red-500/20 bg-red-500/5 p-8">
+          <svg
+            className="mx-auto mb-4 h-12 w-12 text-red-400"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+            <path d="M12 9v4" />
+            <path d="M12 17h.01" />
           </svg>
-          <h1 className="text-xl font-bold text-slate-200">Failed to load analytics</h1>
-          <p className="text-sm text-slate-400 mt-2">
+          <h1 className="text-xl font-semibold text-white">
+            Failed to load analytics
+          </h1>
+          <p className="mt-2 text-sm text-slate-400">
             An unexpected error occurred while compiling your analytics data.
           </p>
-          <div className="mt-6 flex justify-center gap-4">
+          <div className="mt-6 flex justify-center gap-3">
             <Link
               href="/dashboard"
-              className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xs font-semibold transition-colors"
+              className="btn-secondary px-4 py-2 text-xs"
             >
-              Go to Dashboard
+              Go to dashboard
             </Link>
           </div>
         </div>
       </div>
     );
   }
+}
+
+function MetricCard({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number | string;
+  accent: string;
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-5">
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br ${accent} blur-2xl`}
+      />
+      <div className="relative">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+          {label}
+        </div>
+        <div className="mt-2 text-3xl font-semibold text-white">{value}</div>
+      </div>
+    </div>
+  );
 }
