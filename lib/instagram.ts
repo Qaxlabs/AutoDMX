@@ -69,6 +69,7 @@ interface DecryptedAccount {
   id: string;
   ig_user_id: string;
   encrypted_access_token: string;
+  ig_username?: string;
 }
 
 /**
@@ -268,7 +269,7 @@ export async function handleCommentTrigger(
     // 1. Fetch and decrypt the account's access token
     const { data: accountData, error: accountError } = await supabase
       .from('accounts')
-      .select('id, encrypted_access_token, ig_user_id')
+      .select('id, encrypted_access_token, ig_user_id, ig_username')
       .eq('id', automation.account_id)
       .single();
 
@@ -372,7 +373,10 @@ export async function handleCommentTrigger(
     let nextStep = 'completed';
 
     if (requiresFollow) {
-      const followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
+      let followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
+      if (account.ig_username) {
+        followPrompt += `\n\n👉 Follow here: https://www.instagram.com/${account.ig_username}`;
+      }
       messageText = followPrompt;
       quickReplies = [
         {
@@ -431,13 +435,14 @@ export async function handleMessageEvent(
   recipientId: string,  // The business profile's Instagram User ID
   text: string          // Message text content
 ) {
+  console.log(`[DM Handler] Received message from ${senderId}, looking up contact...`);
   try {
     console.log(`[Instagram Webhook DM] Received message from ${senderId} to ${recipientId}: "${text}"`);
 
     // 1. Resolve connected account (single-tenant routing)
     const { data: accountData, error: accountError } = await supabase
       .from('accounts')
-      .select('id, encrypted_access_token, ig_user_id')
+      .select('id, encrypted_access_token, ig_user_id, ig_username')
       .limit(1)
       .maybeSingle();
 
@@ -473,6 +478,8 @@ export async function handleMessageEvent(
       .select('*, automations(*)')
       .eq('contact_id', contact.id)
       .gt('window_expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     if (stateError || !stateData) {
@@ -553,7 +560,10 @@ export async function handleMessageEvent(
     const currentStep = state.current_step;
 
     if (currentStep === 'awaiting_follow_recheck') {
-      const isTapFollowed = text.trim().toLowerCase() === 'i followed!' || text.trim() === 'I_FOLLOWED';
+      const isTapFollowed =
+        text.trim().toLowerCase() === 'i followed!' ||
+        text.trim().toLowerCase() === 'i followed! ✅' ||
+        text.trim() === 'I_FOLLOWED';
       if (isTapFollowed) {
         const isFollowingNow = await checkFollow();
         if (isFollowingNow) {
@@ -564,11 +574,16 @@ export async function handleMessageEvent(
             .update({ current_step: 'completed' })
             .eq('id', state.id);
         } else {
-          const followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
+          // Delay to make the re-prompt feel natural and avoid spamming
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          let followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
+          if (account.ig_username) {
+            followPrompt += `\n\n👉 Follow here: https://www.instagram.com/${account.ig_username}`;
+          }
           await sendDmAndLog(followPrompt, [
             {
               content_type: 'text',
-              title: 'I followed!',
+              title: 'I followed! ✅',
               payload: 'I_FOLLOWED',
             },
           ]);
