@@ -6,11 +6,11 @@
 
 ### What is AutoDMX?
 
-AutoDMX is an **open-source, self-hosted Instagram comment-to-DM automation platform**. When someone comments on your post with a keyword, AutoDMX automatically replies with a DM containing a link, lead magnet, or call-to-action.
+AutoDMX is a **source-available, self-hosted Instagram comment-to-DM automation platform**. When someone comments on your post with a keyword, AutoDMX automatically replies with a DM containing a link, lead magnet, or call-to-action.
 
 ### Is AutoDMX free?
 
-Yes. AutoDMX is licensed under the [MIT License](../LICENSE). You can use, modify, and self-host it for free. You are responsible for your own hosting, Supabase, and Meta API costs.
+Yes, for personal and educational use. AutoDMX is licensed under the [Qaxlabs Source-Available License v1.0](../LICENSE). You can use, modify, and self-host it for free for non-profit/non-commercial purposes. Commercial or business use requires a separate license. You are responsible for your own hosting, Supabase, and Meta API costs.
 
 ### Is AutoDMX affiliated with Meta or Instagram?
 
@@ -167,7 +167,7 @@ Maintainers aim to triage new issues and PRs within a few days. Detailed reviews
 
 ### What license is AutoDMX released under?
 
-[MIT](../LICENSE). You can use AutoDMX commercially, modify it, distribute it, and use it privately — as long as you preserve the copyright notice.
+[Qaxlabs Source-Available License v1.0](../LICENSE). You can use, modify, and self-host it for free for personal or educational purposes. Commercial or business use requires a separate license from Qaxlabs.
 
 ### Is there a hosted version of AutoDMX?
 
@@ -177,7 +177,7 @@ A hosted "AutoDMX-as-a-Service" is on the [roadmap](../ROADMAP.md) but does not 
 
 - You must follow [Meta's Platform Terms](https://developers.facebook.com/terms) and [Instagram's Terms of Service](https://help.instagram.com/478745558852511).
 - You must comply with [GDPR](https://gdpr-info.eu/), [CCPA](https://oag.ca.gov/privacy/ccpa), and other applicable privacy laws in your jurisdiction.
-- The MIT License does not grant you trademark rights to the "AutoDMX" name or logo.
+- The license does not grant you trademark rights to the "AutoDMX" or "Qaxlabs" name or logo.
 
 ---
 

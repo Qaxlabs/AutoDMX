@@ -12,8 +12,8 @@ export const SOCIALS = {
   },
   youtube: {
     label: "YouTube",
-    handle: "@Qax_labs",
-    href: "https://www.youtube.com/@Qax_labs",
+    handle: "@Qaxlabs",
+    href: "https://www.youtube.com/@Qaxlabs",
   },
   x: {
     label: "X (Twitter)",

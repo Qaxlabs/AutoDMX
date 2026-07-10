@@ -4,7 +4,7 @@
 
 **Turn Instagram Comments into Conversions — Instantly.**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![License: Source-Available](https://img.shields.io/badge/License-Source--Available-orange.svg)](./LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres-green)](https://supabase.com/)
@@ -14,7 +14,7 @@ The self-hosted Instagram comment-to-DM automation platform. Engage your audienc
 
 Built by **[Qaxlabs](https://github.com/Qaxlabs)**. Follow along:
 [Instagram](https://instagram.com/qaxlabs) ·
-[YouTube](https://www.youtube.com/@Qax_labs) ·
+[YouTube](https://www.youtube.com/@Qaxlabs) ·
 [X](https://x.com/qaxlabs) ·
 [GitHub](https://github.com/Qaxlabs/AutoDMX)
 
@@ -207,12 +207,16 @@ In short: you may use, study, and modify this Software for **personal or educati
 
 This means you can:
 
-- ✅ Use AutoDMX commercially
-- ✅ Modify the source
-- ✅ Distribute it
-- ✅ Use it privately
+- ✅ Use AutoDMX for Personal Use
+- ✅ Use AutoDMX for Educational Use
+- ✅ Modify the source for personal/educational purposes
+- ✅ Distribute verbatim copies (with license & copyright preserved)
 
-…as long as you preserve the copyright notice and license.
+But you CANNOT:
+
+- ❌ Use AutoDMX for commercial or business purposes
+- ❌ Sublicense, sell, rent, or lease the Software
+- ❌ Host it as a paid or managed service for third parties
 
 ---
 

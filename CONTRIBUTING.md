@@ -276,7 +276,7 @@ When filing a [feature request](https://github.com/Qaxlabs/AutoDMX/issues/new?te
 
 ## 📄 License
 
-By contributing to AutoDMX, you agree that your contributions will be licensed under the [MIT License](./LICENSE).
+By contributing to AutoDMX, you agree that your contributions will be licensed under the [Qaxlabs Source-Available License v1.0](./LICENSE).
 
 ---
 

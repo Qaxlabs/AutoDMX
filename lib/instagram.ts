@@ -372,23 +372,16 @@ export async function handleCommentTrigger(
     let nextStep = 'completed';
 
     if (requiresFollow) {
-      const isFollowing = await checkFollowStatus(comment.from.id, accessToken, contactId, automation.id);
-      if (isFollowing) {
-        const finalMsg = await buildFinalMessage(automation);
-        messageText = finalMsg;
-        nextStep = 'completed';
-      } else {
-        const followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
-        messageText = followPrompt;
-        quickReplies = [
-          {
-            content_type: 'text',
-            title: 'I followed!',
-            payload: 'I_FOLLOWED',
-          },
-        ];
-        nextStep = 'awaiting_follow_recheck';
-      }
+      const followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
+      messageText = followPrompt;
+      quickReplies = [
+        {
+          content_type: 'text',
+          title: 'I followed!',
+          payload: 'I_FOLLOWED',
+        },
+      ];
+      nextStep = 'awaiting_follow_recheck';
     } else {
       const finalMsg = await buildFinalMessage(automation);
       messageText = finalMsg;
@@ -560,24 +553,27 @@ export async function handleMessageEvent(
     const currentStep = state.current_step;
 
     if (currentStep === 'awaiting_follow_recheck') {
-      const isFollowingNow = await checkFollow();
-      if (isFollowingNow) {
-        const finalMsg = await buildFinalMessage(automation);
-        await sendDmAndLog(finalMsg);
-        await supabase
-          .from('conversation_state')
-          .update({ current_step: 'completed' })
-          .eq('id', state.id);
-      } else {
-        const followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
-        await sendDmAndLog(followPrompt, [
-          {
-            content_type: 'text',
-            title: 'I followed!',
-            payload: 'I_FOLLOWED',
-          },
-        ]);
-        // Stay on awaiting_follow_recheck
+      const isTapFollowed = text.trim().toLowerCase() === 'i followed!' || text.trim() === 'I_FOLLOWED';
+      if (isTapFollowed) {
+        const isFollowingNow = await checkFollow();
+        if (isFollowingNow) {
+          const finalMsg = await buildFinalMessage(automation);
+          await sendDmAndLog(finalMsg);
+          await supabase
+            .from('conversation_state')
+            .update({ current_step: 'completed' })
+            .eq('id', state.id);
+        } else {
+          const followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
+          await sendDmAndLog(followPrompt, [
+            {
+              content_type: 'text',
+              title: 'I followed!',
+              payload: 'I_FOLLOWED',
+            },
+          ]);
+          // Stay on awaiting_follow_recheck
+        }
       }
     }
   } catch (err) {
