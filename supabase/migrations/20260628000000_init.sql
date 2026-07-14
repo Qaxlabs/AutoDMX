@@ -138,3 +138,89 @@ CREATE POLICY send_queue_policy ON send_queue
     TO authenticated
     USING (account_id IN (SELECT id FROM accounts WHERE user_id = auth.uid()))
     WITH CHECK (account_id IN (SELECT id FROM accounts WHERE user_id = auth.uid()));
+
+-- Create tracked_links table
+CREATE TABLE IF NOT EXISTS tracked_links (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  automation_id UUID REFERENCES automations(id) ON DELETE CASCADE NOT NULL,
+  original_url TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Enable RLS for tracked_links
+ALTER TABLE tracked_links ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public select for redirect" ON tracked_links
+  FOR SELECT
+  USING (true);
+
+CREATE POLICY "Allow service role insert" ON tracked_links
+  FOR INSERT
+  WITH CHECK (true);
+
+-- Create link_clicks table
+CREATE TABLE IF NOT EXISTS link_clicks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  automation_id UUID REFERENCES automations(id) ON DELETE CASCADE NOT NULL,
+  url TEXT NOT NULL,
+  clicked_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Enable RLS for link_clicks
+ALTER TABLE link_clicks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can read clicks for their automations" ON link_clicks
+  FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM automations
+      JOIN accounts ON automations.account_id = accounts.id
+      WHERE automations.id = link_clicks.automation_id
+        AND accounts.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Allow public insert for clicks" ON link_clicks
+  FOR INSERT
+  WITH CHECK (true);
+
+-- Disable Row Level Security on all tables since route authorization is managed in middleware
+ALTER TABLE accounts DISABLE ROW LEVEL SECURITY;
+ALTER TABLE automations DISABLE ROW LEVEL SECURITY;
+ALTER TABLE contacts DISABLE ROW LEVEL SECURITY;
+ALTER TABLE conversation_state DISABLE ROW LEVEL SECURITY;
+ALTER TABLE message_log DISABLE ROW LEVEL SECURITY;
+ALTER TABLE send_queue DISABLE ROW LEVEL SECURITY;
+ALTER TABLE tracked_links DISABLE ROW LEVEL SECURITY;
+ALTER TABLE link_clicks DISABLE ROW LEVEL SECURITY;
+
+-- Drop foreign key constraint on accounts.user_id referencing auth.users(id)
+ALTER TABLE accounts DROP CONSTRAINT IF EXISTS accounts_user_id_fkey;
+
+-- Make user_id nullable in accounts
+ALTER TABLE accounts ALTER COLUMN user_id DROP NOT NULL;
+
+-- Add webhook_account_id to accounts table to record webhook Meta ID namespace references
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS webhook_account_id TEXT;
+
+-- Simplify the automation model: add message (TEXT) and links (TEXT[])
+ALTER TABLE automations ADD COLUMN IF NOT EXISTS message TEXT;
+ALTER TABLE automations ADD COLUMN IF NOT EXISTS links TEXT[] DEFAULT '{}'::TEXT[] NOT NULL;
+
+-- Create processed_comments table for deduplication
+CREATE TABLE processed_comments (
+    comment_id TEXT PRIMARY KEY,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Enable RLS on the table
+ALTER TABLE processed_comments ENABLE ROW LEVEL SECURITY;
+
+-- Enable RLS Policies
+-- allow insertion and reads for authenticated and service roles
+-- Webhooks run on service role, so they will bypass RLS anyway
+CREATE POLICY processed_comments_policy ON processed_comments
+    FOR ALL
+    TO authenticated
+    USING (true)
+    WITH CHECK (true);
