@@ -40,6 +40,9 @@ Built by **[Qaxlabs](https://github.com/Qaxlabs)**. Follow along:
 ---
 
 ## 🖼️ Demo
+checkout the full video:
+
+https://youtu.be/Yu7mTyr_rkU?si=sXX_lNiv_46bjbCT
 
 The dashboard provides a clean interface to:
 
@@ -48,7 +51,7 @@ The dashboard provides a clean interface to:
 - Inspect contacts, conversations, and analytics
 - Manage link tracking and click performance
 
-> Screenshot coming soon — PRs welcome!
+
 
 ---
 

@@ -1,4 +1,4 @@
-# 🗺️ Roadmap
+rr# 🗺️ Roadmap
 
 This is a high-level, community-driven roadmap for AutoDMX. It is **not a commitment** — priorities shift based on user feedback, contributions, and ecosystem changes. Items move between sections as work progresses.
 
