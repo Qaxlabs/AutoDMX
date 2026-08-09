@@ -4,7 +4,7 @@
 
 **Turn Instagram Comments into Conversions — Instantly.**
 
-[![License: Source-Available](https://img.shields.io/badge/License-Source--Available-orange.svg)](./LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres-green)](https://supabase.com/)
@@ -174,7 +174,7 @@ Use the same `META_VERIFY_TOKEN` value for webhook verification.
 - **[Code of Conduct](./CODE_OF_CONDUCT.md)** — Community guidelines
 - **[Security Policy](./SECURITY.md)** — How to report vulnerabilities
 - **[Changelog](./CHANGELOG.md)** — Release history
-- **[License (Qaxlabs Source-Available v1.0)](./LICENSE)** — Usage terms
+- **[License (MIT)](./LICENSE)** — Open-source terms
 
 ---
 
@@ -204,22 +204,9 @@ All Instagram access tokens are encrypted at rest using **AES-256-GCM** with a k
 
 ## 🪪 License
 
-Distributed under the **Qaxlabs Source-Available License v1.0**. See [`LICENSE`](./LICENSE) for the full text.
+Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for the full text.
 
-In short: you may use, study, and modify this Software for **personal or educational purposes**. You may **not** use it for commercial or business purposes, sell it, or run a paid service on top of it without a separate commercial license from Qaxlabs.
-
-This means you can:
-
-- ✅ Use AutoDMX for Personal Use
-- ✅ Use AutoDMX for Educational Use
-- ✅ Modify the source for personal/educational purposes
-- ✅ Distribute verbatim copies (with license & copyright preserved)
-
-But you CANNOT:
-
-- ❌ Use AutoDMX for commercial or business purposes
-- ❌ Sublicense, sell, rent, or lease the Software
-- ❌ Host it as a paid or managed service for third parties
+In short: AutoDMX is free and open-source software. You are free to use, modify, distribute, and sublicense it for personal, educational, or commercial purposes.
 
 ---
 

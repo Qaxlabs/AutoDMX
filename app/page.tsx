@@ -236,7 +236,7 @@ export default function Home() {
             </div>
 
             <p className="mt-5 text-xs text-slate-500">
-              Source-available license · Personal & educational use · v0.1.0
+              MIT open-source license · v0.1.0
             </p>
           </div>
 

@@ -6,11 +6,11 @@
 
 ### What is AutoDMX?
 
-AutoDMX is a **source-available, self-hosted Instagram comment-to-DM automation platform**. When someone comments on your post with a keyword, AutoDMX automatically replies with a DM containing a link, lead magnet, or call-to-action.
+AutoDMX is an **open-source, self-hosted Instagram comment-to-DM automation platform**. When someone comments on your post with a keyword, AutoDMX automatically replies with a DM containing a link, lead magnet, or call-to-action.
 
 ### Is AutoDMX free?
 
-Yes, for personal and educational use. AutoDMX is licensed under the [Qaxlabs Source-Available License v1.0](../LICENSE). You can use, modify, and self-host it for free for non-profit/non-commercial purposes. Commercial or business use requires a separate license. You are responsible for your own hosting, Supabase, and Meta API costs.
+Yes. AutoDMX is open-source software licensed under the [MIT License](../LICENSE). You can use, modify, self-host, and distribute it for free for personal, educational, or commercial purposes. You are responsible for your own hosting, Supabase, and Meta API costs.
 
 ### Is AutoDMX affiliated with Meta or Instagram?
 
@@ -167,7 +167,7 @@ Maintainers aim to triage new issues and PRs within a few days. Detailed reviews
 
 ### What license is AutoDMX released under?
 
-[Qaxlabs Source-Available License v1.0](../LICENSE). You can use, modify, and self-host it for free for personal or educational purposes. Commercial or business use requires a separate license from Qaxlabs.
+The [MIT License](../LICENSE). You can use, modify, self-host, and distribute it for free for personal, educational, or commercial purposes.
 
 ### Is there a hosted version of AutoDMX?
 

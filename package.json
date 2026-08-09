@@ -16,7 +16,7 @@
     "meta-graph-api",
     "qaxlabs"
   ],
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "homepage": "https://github.com/Qaxlabs/AutoDMX",
   "bugs": {
     "url": "https://github.com/Qaxlabs/AutoDMX/issues"

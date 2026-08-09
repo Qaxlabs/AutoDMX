@@ -42,7 +42,7 @@ AutoDMX stands on the shoulders of giants. This project would not be possible wi
 
 ## 📄 License
 
-AutoDMX is released under the [Qaxlabs Source-Available License v1.0](./LICENSE). The libraries and tools listed above are governed by their own respective licenses — see their repositories for details.
+AutoDMX is released under the [MIT License](./LICENSE). The libraries and tools listed above are governed by their own respective licenses — see their repositories for details.
 
 ---
 
