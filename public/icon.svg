@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Speed Lines Gradient -->
+    <linearGradient id="speed-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9333EA" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+
+    <!-- Main 'A' Gradient (Left leg to Apex) -->
+    <linearGradient id="a-main-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="35%" stop-color="#8B5CF6" />
+      <stop offset="70%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+
+    <!-- Right Leg Gradient (Cyan Accent) -->
+    <linearGradient id="a-right-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="50%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#22D3EE" />
+    </linearGradient>
+
+    <!-- Swash / Curved Arch Gradient -->
+    <linearGradient id="swash-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A855F7" />
+      <stop offset="50%" stop-color="#60A5FA" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+
+    <!-- Inner Glow & Drop Shadow -->
+    <filter id="shadow-effect" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#7C3AED" flood-opacity="0.35" />
+    </filter>
+
+    <filter id="swash-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <!-- Dark Background Glow (Optional container overlay) -->
+  <circle cx="250" cy="250" r="210" fill="#7C3AED" opacity="0.08" filter="blur(40px)" />
+
+  <g filter="url(#shadow-effect)">
+    <!-- 1. Motion Speed Lines (Left side) -->
+    <rect x="110" y="175" width="60" height="16" rx="8" fill="url(#speed-grad)" />
+    <rect x="75" y="215" width="95" height="18" rx="9" fill="url(#speed-grad)" />
+    <rect x="95" y="255" width="75" height="16" rx="8" fill="url(#speed-grad)" />
+
+    <!-- 2. The Main 'A' Outer Frame -->
+    <!-- Apex at (260, 60), Left foot at (150, 310), Right foot at (370, 310) -->
+    <path d="M 260 65 
+             C 275 65, 285 75, 295 95 
+             L 375 270 
+             C 385 292, 375 310, 350 310 
+             L 315 310 
+             C 298 310, 290 298, 283 282 
+             L 260 230 
+             L 237 282 
+             C 230 298, 222 310, 205 310 
+             L 170 310 
+             C 145 310, 135 292, 145 270 
+             L 225 95 
+             C 235 75, 245 65, 260 65 Z" 
+          fill="url(#a-main-grad)" />
+
+    <!-- Right Leg Highlight Overlay -->
+    <path d="M 260 65 
+             C 275 65, 285 75, 295 95 
+             L 375 270 
+             C 385 292, 375 310, 350 310 
+             L 315 310 
+             C 298 310, 290 298, 283 282 
+             L 260 230 Z" 
+          fill="url(#a-right-grad)" opacity="0.9" />
+
+    <!-- 3. Curved Swash / Arch crossing over the A -->
+    <path d="M 152 250 
+             C 200 190, 300 185, 360 235 
+             C 310 210, 225 212, 175 278 Z" 
+          fill="url(#swash-grad)" filter="url(#swash-shadow)" />
+
+    <!-- 4. Speech Bubble Cutout (Center inside 'A') -->
+    <g transform="translate(260, 268)">
+      <!-- Speech bubble body -->
+      <path d="M 0 -38 
+               C -32 -38, -55 -18, -55 10 
+               C -55 26, -44 40, -28 49 
+               L -35 70 
+               L -8 57 
+               C -5 58, -2 58, 0 58 
+               C 32 58, 55 38, 55 10 
+               C 55 -18, 32 -38, 0 -38 Z" 
+            fill="#090A15" />
+
+      <!-- Three Dots inside Speech Bubble -->
+      <circle cx="-18" cy="10" r="6" fill="#38BDF8" />
+      <circle cx="0" cy="10" r="6" fill="#818CF8" />
+      <circle cx="18" cy="10" r="6" fill="#C084FC" />
+    </g>
+  </g>
+</svg>

@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🚀 AutoDMX
+<img src="./public/logo.svg" alt="AutoDMX — Automate. Engage. Convert." width="480" />
+
+<br />
 
 **Turn Instagram Comments into Conversions — Instantly.**
 

@@ -189,6 +189,8 @@ export function SocialLinks({
 /* Brand mark                                                         */
 /* ------------------------------------------------------------------ */
 
+import { AutoDMXIcon } from "./AutoDMXLogo";
+
 export type BrandMarkProps = {
   className?: string;
   /** When true, renders a small mark next to the wordmark */
@@ -196,7 +198,7 @@ export type BrandMarkProps = {
 };
 
 /**
- * The AutoDMX wordmark with a small glyph.
+ * The official AutoDMX wordmark with the brand icon mark.
  * Always links back to the home page.
  */
 export function BrandMark({ className = "", withMark = true }: BrandMarkProps) {
@@ -206,29 +208,16 @@ export function BrandMark({ className = "", withMark = true }: BrandMarkProps) {
       className={`group inline-flex items-center gap-2.5 ${className}`}
     >
       {withMark && (
-        <span
-          aria-hidden="true"
-          className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-400 to-accent-500 shadow-[0_0_20px_-5px_rgba(124,58,237,0.6)] transition-transform duration-300 group-hover:scale-105"
-        >
-          <span className="absolute inset-0 rounded-lg bg-gradient-to-br from-brand-400 to-accent-500 opacity-60 blur-md transition-opacity duration-300 group-hover:opacity-100" />
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            className="relative h-4 w-4 text-white"
-            stroke="currentColor"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M5 12h10" />
-            <path d="m11 8 4 4-4 4" />
-            <path d="M19 5v14" />
-          </svg>
-        </span>
+        <div className="relative flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full bg-brand-500/20 blur-md transition-opacity duration-300 group-hover:opacity-100 opacity-60" />
+          <AutoDMXIcon className="relative h-8 w-8 transition-transform duration-300 group-hover:scale-105" />
+        </div>
       )}
-      <span className="text-[1.05rem] font-semibold tracking-tight text-white">
+      <span className="text-[1.1rem] font-bold tracking-tight text-white">
         Auto
-        <span className="text-brand-gradient">DMX</span>
+        <span className="bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          DMX
+        </span>
       </span>
     </Link>
   );
