@@ -493,41 +493,42 @@ export async function handleMessageEvent(
       .update({ last_interaction_at: new Date().toISOString() })
       .eq('id', contact.id);
 
-    // 3. Find active conversation state
-    const { data: stateData, error: stateError } = await supabase
+    // 3. Fetch ALL active conversation states for this contact.
+    //    A user may have commented on multiple reels, each with its own automation.
+    //    We must process every pending state, not just the most recent one.
+    const { data: allStatesData, error: stateError } = await supabase
       .from('conversation_state')
       .select('*, automations(*)')
       .eq('contact_id', contact.id)
       .gt('window_expires_at', new Date().toISOString())
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .order('created_at', { ascending: false });
 
-    if (stateError || !stateData) {
-      console.log(`[Instagram Webhook DM] No active or non-expired conversation state for contact: ${contact.id}`);
+    if (stateError || !allStatesData || allStatesData.length === 0) {
+      console.log(`[Instagram Webhook DM] No active conversation states for contact: ${contact.id}`);
       return;
     }
 
-    const state = stateData as unknown as ConversationStateWithAutomation;
-    const automation = state.automations;
-    if (!automation) {
-      console.log(`[Instagram Webhook DM] Conversation state is missing automation metadata: ${state.id}`);
-      return;
-    }
-
+    const allStates = allStatesData as unknown as ConversationStateWithAutomation[];
     const accessToken = decrypt(account.encrypted_access_token);
 
-    // Log the incoming DM message
-    await supabase.from('message_log').insert({
-      contact_id: contact.id,
-      automation_id: automation.id,
-      direction: 'in',
-      content: text,
-      status: 'dm_received',
-    });
+    // Log the incoming DM once, attributed to the most recent automation
+    const primaryAutomation = allStates[0].automations;
+    if (primaryAutomation) {
+      await supabase.from('message_log').insert({
+        contact_id: contact.id,
+        automation_id: primaryAutomation.id,
+        direction: 'in',
+        content: text,
+        status: 'dm_received',
+      });
+    }
 
-    // Helper to send message and log it
-    const sendDmAndLog = async (msgText: string, quickReplies?: Array<{ content_type: string; title: string; payload: string }>) => {
+    // Helper to send a DM and log it, attributed to the correct automation
+    const sendDmAndLog = async (
+      msgText: string,
+      automationId: string,
+      quickReplies?: Array<{ content_type: string; title: string; payload: string }>
+    ) => {
       const body: {
         recipient: { id: string };
         message: { text: string; quick_replies?: Array<{ content_type: string; title: string; payload: string }> };
@@ -556,7 +557,7 @@ export async function handleMessageEvent(
         console.error(`[Meta API Error] Failed to send DM reply:`, dmData.error.message);
         await supabase.from('message_log').insert({
           contact_id: contact.id,
-          automation_id: automation.id,
+          automation_id: automationId,
           direction: 'out',
           content: msgText,
           status: `failed: ${dmData.error.message}`,
@@ -564,7 +565,7 @@ export async function handleMessageEvent(
       } else {
         await supabase.from('message_log').insert({
           contact_id: contact.id,
-          automation_id: automation.id,
+          automation_id: automationId,
           direction: 'out',
           content: msgText,
           status: 'sent',
@@ -572,50 +573,73 @@ export async function handleMessageEvent(
       }
     };
 
-    // Helper to check follow status
-    const checkFollow = async (): Promise<boolean> => {
-      return await checkFollowStatus(senderId, accessToken, contact.id, automation.id);
-    };
+    // 4. Collect all states that are still waiting for the user to follow
+    const pendingFollowStates = allStates.filter(
+      (s) => s.current_step === 'awaiting_follow_recheck' && s.automations
+    );
 
-    // 4. State Machine transitions
-    const currentStep = state.current_step;
+    if (pendingFollowStates.length === 0) {
+      console.log(`[Instagram Webhook DM] No states awaiting follow recheck for contact: ${contact.id}`);
+      return;
+    }
 
-    if (currentStep === 'awaiting_follow_recheck') {
-      const isTapFollowed =
-        text.trim().toLowerCase() === 'i followed!' ||
-        text.trim().toLowerCase() === 'i followed! ✅' ||
-        text.trim() === 'I_FOLLOWED';
-      if (isTapFollowed) {
-        const isFollowingNow = await checkFollow();
-        if (isFollowingNow) {
-          const finalMsg = await buildFinalMessage(automation);
-          await sendDmAndLog(finalMsg);
-          await supabase
-            .from('conversation_state')
-            .update({ current_step: 'completed' })
-            .eq('id', state.id);
-        } else {
-          // Delay to make the re-prompt feel natural and avoid spamming
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-          let followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
-          if (account.ig_username) {
-            followPrompt += `\n\n👉 Follow here: https://www.instagram.com/${account.ig_username}`;
-          }
-          await sendDmAndLog(followPrompt, [
-            {
-              content_type: 'text',
-              title: 'I followed! ✅',
-              payload: 'I_FOLLOWED',
-            },
-          ]);
-          // Stay on awaiting_follow_recheck
-        }
+    // 5. State machine — handle "I followed!" reply
+    const isTapFollowed =
+      text.trim().toLowerCase() === 'i followed!' ||
+      text.trim().toLowerCase() === 'i followed! ✅' ||
+      text.trim() === 'I_FOLLOWED';
+
+    if (!isTapFollowed) {
+      console.log(`[Instagram Webhook DM] Message is not a follow confirmation, ignoring.`);
+      return;
+    }
+
+    // Check follow status ONCE — reuse result for all pending automations
+    console.log(`[Instagram Webhook DM] Checking follow status for ${pendingFollowStates.length} pending automation(s)...`);
+    const isFollowingNow = await checkFollowStatus(
+      senderId,
+      accessToken,
+      contact.id,
+      pendingFollowStates[0].automations!.id
+    );
+
+    if (isFollowingNow) {
+      // User is following — deliver every pending automation's link in sequence
+      console.log(`[Instagram Webhook DM] User is following. Sending links for ${pendingFollowStates.length} automation(s).`);
+      for (const state of pendingFollowStates) {
+        const automation = state.automations!;
+        const finalMsg = await buildFinalMessage(automation);
+        await sendDmAndLog(finalMsg, automation.id);
+        await supabase
+          .from('conversation_state')
+          .update({ current_step: 'completed' })
+          .eq('id', state.id);
+        console.log(`[Instagram Webhook DM] Delivered link for automation ${automation.id} and marked completed.`);
       }
+    } else {
+      // User is NOT following — send ONE re-prompt to avoid spamming.
+      // Use the most recent automation's follow prompt message.
+      console.log(`[Instagram Webhook DM] User is not following. Sending a single re-prompt.`);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const mostRecentAutomation = pendingFollowStates[0].automations!;
+      let followPrompt = mostRecentAutomation.follow_prompt_message || 'Please follow our profile first to get the link!';
+      if (account.ig_username) {
+        followPrompt += `\n\n👉 Follow here: https://www.instagram.com/${account.ig_username}`;
+      }
+      await sendDmAndLog(followPrompt, mostRecentAutomation.id, [
+        {
+          content_type: 'text',
+          title: 'I followed! ✅',
+          payload: 'I_FOLLOWED',
+        },
+      ]);
+      // All states remain on awaiting_follow_recheck — they will be retried next time
     }
   } catch (err) {
     console.error(`[Instagram DM Error] Failed to process message event from ${senderId}:`, err);
   }
 }
+
 
 export async function initializeAccountIfNeeded(): Promise<{ success: boolean; error?: string }> {
   try {
