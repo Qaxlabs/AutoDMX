@@ -203,36 +203,8 @@ export default async function AnalyticsPage({
               </p>
             </div>
 
-            <div className="relative w-full sm:w-auto">
-              <select
-                defaultValue={activeAccount.id}
-                onChange={(e) => {
-                  const url = new URL(window.location.href);
-                  url.searchParams.set('accountId', e.target.value);
-                  window.location.href = url.toString();
-                }}
-                className="w-full appearance-none rounded-xl border border-white/8 bg-ink-900/60 px-4 py-2.5 pr-10 text-sm font-medium text-slate-100 outline-none transition-all focus:border-brand-400/50 focus:ring-2 focus:ring-brand-400/20 sm:min-w-[200px]"
-              >
-                {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    @{a.ig_username}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500">
-                <svg
-                  className="h-4 w-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </div>
-            </div>
+            <AccountSwitcher accounts={accounts} activeAccountId={activeAccount.id} />
+
           </div>
 
           {/* Aggregates Overview Cards */}
@@ -433,6 +405,49 @@ function MetricCard({
           {label}
         </div>
         <div className="mt-2 text-3xl font-semibold text-white">{value}</div>
+      </div>
+    </div>
+  );
+}
+
+'use client';
+
+function AccountSwitcher({
+  accounts,
+  activeAccountId,
+}: {
+  accounts: { id: string; ig_username: string }[];
+  activeAccountId: string;
+}) {
+  return (
+    <div className="relative w-full sm:w-auto">
+      <select
+        defaultValue={activeAccountId}
+        onChange={(e) => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('accountId', e.target.value);
+          window.location.href = url.toString();
+        }}
+        className="w-full appearance-none rounded-xl border border-white/8 bg-ink-900/60 px-4 py-2.5 pr-10 text-sm font-medium text-slate-100 outline-none transition-all focus:border-brand-400/50 focus:ring-2 focus:ring-brand-400/20 sm:min-w-[200px]"
+      >
+        {accounts.map((a) => (
+          <option key={a.id} value={a.id}>
+            @{a.ig_username}
+          </option>
+        ))}
+      </select>
+      <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500">
+        <svg
+          className="h-4 w-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
       </div>
     </div>
   );
