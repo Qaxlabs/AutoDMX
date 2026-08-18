@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     // Fetch the single connected account regardless of ID format (single-tenant routing)
     const { data: account, error: accountError } = await supabase
       .from('accounts')
-      .select('id, webhook_account_id')
+      .select('id, webhook_account_id, ig_user_id')
       .limit(1)
       .maybeSingle();
 
@@ -152,6 +152,15 @@ export async function POST(request: NextRequest) {
           // Return 500 to let the provider retry later
           return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
         }
+      }
+
+      // Bug fix: Skip comments made by our own account to prevent a reply loop.
+      // When the bot posts a public reply, Meta fires a webhook for that reply too.
+      // Without this guard, the bot replies to its own reply, causing 7-9 repeated comments.
+      const commentFromId = commentValue.from?.id;
+      if (commentFromId && account.ig_user_id && commentFromId === account.ig_user_id) {
+        console.log(`[Webhook POST] Skipping self-comment ${commentValue.id} from our own account to prevent reply loop.`);
+        continue;
       }
 
       const mediaId = commentValue.media?.id;

@@ -373,19 +373,40 @@ export async function handleCommentTrigger(
     let nextStep = 'completed';
 
     if (requiresFollow) {
-      let followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
-      if (account.ig_username) {
-        followPrompt += `\n\n👉 Follow here: https://www.instagram.com/${account.ig_username}`;
+      // Bug fix: Check actual follow status FIRST before deciding what to send.
+      // Previously, the follow prompt was sent unconditionally — even to existing followers.
+      // Now: followers get the link immediately, non-followers get the prompt.
+      console.log(`[Instagram Trigger] Follow gate enabled — checking if ${comment.from.id} is already following...`);
+      const isAlreadyFollowing = await checkFollowStatus(
+        comment.from.id,
+        accessToken,
+        contactId,
+        automation.id
+      );
+
+      if (isAlreadyFollowing) {
+        // Already a follower — skip the gate and send the link directly
+        console.log(`[Instagram Trigger] User is already following. Sending final message directly.`);
+        const finalMsg = await buildFinalMessage(automation);
+        messageText = finalMsg;
+        nextStep = 'completed';
+      } else {
+        // Not a follower — ask them to follow first
+        console.log(`[Instagram Trigger] User is not following. Sending follow prompt.`);
+        let followPrompt = automation.follow_prompt_message || 'Please follow our profile first to get the link!';
+        if (account.ig_username) {
+          followPrompt += `\n\n👉 Follow here: https://www.instagram.com/${account.ig_username}`;
+        }
+        messageText = followPrompt;
+        quickReplies = [
+          {
+            content_type: 'text',
+            title: 'I followed!',
+            payload: 'I_FOLLOWED',
+          },
+        ];
+        nextStep = 'awaiting_follow_recheck';
       }
-      messageText = followPrompt;
-      quickReplies = [
-        {
-          content_type: 'text',
-          title: 'I followed!',
-          payload: 'I_FOLLOWED',
-        },
-      ];
-      nextStep = 'awaiting_follow_recheck';
     } else {
       const finalMsg = await buildFinalMessage(automation);
       messageText = finalMsg;
