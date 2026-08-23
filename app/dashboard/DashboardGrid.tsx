@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AutomationSlideOver from './AutomationSlideOver';
+import { Search, ChevronDown, Film, Image as ImageIcon, Layers } from 'lucide-react';
 
 type Post = {
   id: string;
@@ -142,17 +143,17 @@ export default function DashboardGrid({
         <SummaryStat
           label="Paused automations"
           value={totalInactive}
-          tone={totalInactive > 0 ? 'warn' : 'muted'}
+          tone={totalInactive > 0 ? 'muted' : 'muted'}
         />
         <SummaryStat label="Connected accounts" value={accounts.length} />
       </div>
 
       {/* Filters & Account Selector Header */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-5 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between dark:border-neutral-800 dark:bg-neutral-900/60">
         <div className="flex w-full items-center gap-3 md:w-auto">
           <label
             htmlFor="accountSelect"
-            className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400"
+            className="shrink-0 text-[11px] font-mono font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400"
           >
             Account
           </label>
@@ -162,7 +163,7 @@ export default function DashboardGrid({
               value={accountId}
               onChange={handleAccountChange}
               disabled={isPending}
-              className="w-full appearance-none rounded-xl border border-white/8 bg-ink-900/60 px-4 py-2.5 pr-10 text-sm font-medium text-slate-100 outline-none transition-all focus:border-brand-400/50 focus:ring-2 focus:ring-brand-400/20 disabled:opacity-50 md:min-w-[200px]"
+              className="w-full appearance-none rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2 pr-9 text-sm font-medium text-neutral-900 outline-none transition-all focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 disabled:opacity-50 md:min-w-[200px] dark:border-neutral-800 dark:bg-neutral-950 dark:text-white dark:focus:border-neutral-700 dark:focus:ring-neutral-800"
             >
               {accounts.map((acc) => (
                 <option key={acc.id} value={acc.id}>
@@ -170,18 +171,8 @@ export default function DashboardGrid({
                 </option>
               ))}
             </select>
-            <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500">
-              <svg
-                className="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
+            <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400">
+              <ChevronDown className="h-4 w-4" />
             </div>
           </div>
         </div>
@@ -193,31 +184,20 @@ export default function DashboardGrid({
               placeholder="Search posts by caption…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-white/8 bg-ink-900/60 py-2.5 pl-10 pr-4 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all focus:border-brand-400/50 focus:ring-2 focus:ring-brand-400/20"
+              className="w-full rounded-xl border border-neutral-200 bg-neutral-50 py-2 pl-9 pr-4 text-sm text-neutral-900 placeholder-neutral-400 outline-none transition-all focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-800 dark:bg-neutral-950 dark:text-white dark:placeholder-neutral-500 dark:focus:border-neutral-700 dark:focus:ring-neutral-800"
             />
-            <svg
-              className="absolute left-3.5 top-3 h-4 w-4 text-slate-500"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-neutral-400 dark:text-neutral-500" />
           </div>
 
-          <div className="flex gap-1 rounded-xl border border-white/5 bg-ink-900/40 p-1">
+          <div className="flex gap-1 rounded-xl border border-neutral-200 bg-neutral-100/70 p-1 dark:border-neutral-800 dark:bg-neutral-950">
             {MEDIA_FILTERS.map((f) => (
               <button
                 key={f.key}
                 onClick={() => setFilterType(f.key)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                   filterType === f.key
-                    ? 'bg-brand-500 text-white shadow-[0_0_20px_-5px_rgba(124,58,237,0.6)]'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-white'
+                    : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                 }`}
               >
                 {f.label}
@@ -229,7 +209,7 @@ export default function DashboardGrid({
 
       {/* Media Grid */}
       {filteredMedia.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-white/8 bg-white/[0.015] py-20 text-center text-sm text-slate-500">
+        <div className="rounded-3xl border border-dashed border-neutral-200 py-20 text-center text-sm text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
           No posts or reels match the current filters.
         </div>
       ) : (
@@ -244,22 +224,30 @@ export default function DashboardGrid({
                   ? 'Carousel'
                   : 'Image';
 
+            const MediaIcon =
+              post.media_type === 'VIDEO'
+                ? Film
+                : post.media_type === 'CAROUSEL_ALBUM'
+                  ? Layers
+                  : ImageIcon;
+
             return (
               <button
                 key={post.id}
                 onClick={() => handleCardClick(post)}
-                className="card-lift group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] text-left"
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-neutral-200/80 bg-white text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-neutral-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900/60 dark:hover:border-neutral-700 dark:hover:shadow-xl"
               >
-                <div className="relative aspect-square w-full overflow-hidden border-b border-white/5 bg-ink-900">
+                <div className="relative aspect-square w-full overflow-hidden border-b border-neutral-200/80 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={post.thumbnail_url || post.media_url}
                     alt={post.caption || 'Instagram post'}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
 
                   <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-                    <span className="rounded-full border border-white/10 bg-ink-950/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-200 backdrop-blur-sm">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-white/90 px-2.5 py-0.5 text-[10px] font-medium tracking-wide text-neutral-800 backdrop-blur-md dark:border-white/10 dark:bg-black/90 dark:text-neutral-200">
+                      <MediaIcon className="h-3 w-3" />
                       {mediaType}
                     </span>
                   </div>
@@ -267,17 +255,15 @@ export default function DashboardGrid({
                   {auto && (
                     <div className="absolute right-3 top-3">
                       <span
-                        className={`flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold backdrop-blur-sm ${
+                        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-medium backdrop-blur-md ${
                           isAutoActive
-                            ? 'border-emerald-500/30 bg-emerald-500/15 text-emerald-300'
-                            : 'border-white/8 bg-ink-950/80 text-slate-400'
+                            ? 'border-emerald-500/20 bg-emerald-50/90 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/90 dark:text-emerald-400'
+                            : 'border-neutral-200 bg-white/90 text-neutral-600 dark:border-neutral-800 dark:bg-black/90 dark:text-neutral-400'
                         }`}
                       >
                         <span
                           className={`h-1.5 w-1.5 rounded-full ${
-                            isAutoActive
-                              ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]'
-                              : 'bg-slate-500'
+                            isAutoActive ? 'bg-emerald-500' : 'bg-neutral-400'
                           }`}
                         />
                         {isAutoActive ? 'Active' : 'Paused'}
@@ -285,19 +271,19 @@ export default function DashboardGrid({
                     </div>
                   )}
 
-                  <div className="absolute bottom-3 left-3 rounded-md bg-ink-950/80 px-2 py-0.5 text-[10px] font-medium text-slate-300 backdrop-blur-sm">
+                  <div className="absolute bottom-3 left-3 rounded-md bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-md">
                     {formatDate(post.timestamp)}
                   </div>
                 </div>
 
-                <div className="flex flex-1 flex-col gap-1.5 p-4">
-                  <p className="line-clamp-1 text-sm font-semibold text-white transition-colors group-hover:text-brand-200">
+                <div className="flex flex-1 flex-col gap-1 p-4">
+                  <p className="line-clamp-1 text-sm font-semibold text-neutral-900 transition-colors group-hover:text-black dark:text-neutral-100 dark:group-hover:text-white">
                     {getFirstLine(post.caption)}
                   </p>
-                  <p className="line-clamp-2 text-xs leading-relaxed text-slate-400">
+                  <p className="line-clamp-2 text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
                     {post.caption
                       ? post.caption.split('\n').slice(1).join(' ')
-                      : 'Click to configure an automation for this post.'}
+                      : 'Click to configure an automation rule.'}
                   </p>
                 </div>
               </button>
@@ -329,13 +315,12 @@ function SummaryStat({
 }) {
   const toneClass =
     tone === 'good'
-      ? 'text-emerald-300'
-      : tone === 'warn'
-        ? 'text-amber-300'
-        : 'text-white';
+      ? 'text-emerald-700 dark:text-emerald-400'
+      : 'text-neutral-900 dark:text-white';
+
   return (
-    <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+    <div className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/60">
+      <div className="text-[11px] font-mono font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
         {label}
       </div>
       <div className={`mt-2 text-2xl font-semibold ${toneClass}`}>{value}</div>

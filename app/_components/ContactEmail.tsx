@@ -29,10 +29,10 @@ export function ContactEmail({
 
   const linkClass =
     variant === 'strong'
-      ? 'text-violet-400 hover:underline font-semibold'
+      ? 'text-neutral-900 dark:text-white font-medium underline underline-offset-4 hover:opacity-80'
       : variant === 'subtle'
-        ? 'text-violet-400/80 hover:underline'
-        : 'text-violet-400 hover:underline';
+        ? 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white underline underline-offset-4'
+        : 'text-neutral-900 dark:text-neutral-100 hover:underline underline-offset-4';
 
   if (!asLink) {
     return <span className={className}>{resolvedEmail}</span>;
@@ -63,12 +63,12 @@ export function ContactBlock({
   const resolvedName = operatorName ?? process.env.OPERATOR_NAME ?? 'the account operator';
 
   return (
-    <div className={`space-y-2 ${className}`.trim()}>
-      <p className="text-slate-400">
-        <span className="font-semibold text-slate-200">Operator:</span> {resolvedName}
+    <div className={`space-y-1.5 text-sm ${className}`.trim()}>
+      <p className="text-neutral-600 dark:text-neutral-400">
+        <span className="font-medium text-neutral-900 dark:text-neutral-200">Operator:</span> {resolvedName}
       </p>
-      <p className="text-slate-400">
-        <span className="font-semibold text-slate-200">Email: </span>
+      <p className="text-neutral-600 dark:text-neutral-400">
+        <span className="font-medium text-neutral-900 dark:text-neutral-200">Email: </span>
         <ContactEmail email={resolvedEmail} operatorName={resolvedName} variant="strong" />
       </p>
     </div>
@@ -82,7 +82,7 @@ export function BackToHome({ className = '' }: { className?: string }) {
   return (
     <Link
       href="/"
-      className={`text-sm font-semibold text-violet-400 hover:text-violet-300 transition-colors inline-flex items-center gap-1 ${className}`.trim()}
+      className={`text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors inline-flex items-center gap-1.5 ${className}`.trim()}
     >
       &larr; Back to Home
     </Link>

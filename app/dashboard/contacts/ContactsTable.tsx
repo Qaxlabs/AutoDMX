@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateContactTags } from './actions';
+import { Search, ChevronDown, Download, Users, X, Plus } from 'lucide-react';
 
 type Contact = {
   id: string;
@@ -151,13 +152,13 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
   return (
     <div className="space-y-6">
       {/* Controls: Switcher, Search, Export */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-5 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between dark:border-neutral-800 dark:bg-neutral-900/60">
         <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center md:w-auto">
           <div className="relative w-full sm:w-auto">
             <select
               value={accountId}
               onChange={(e) => handleAccountChange(e.target.value)}
-              className="w-full appearance-none rounded-xl border border-white/8 bg-ink-900/60 px-4 py-2.5 pr-10 text-sm font-medium text-slate-100 outline-none transition-all focus:border-brand-400/50 focus:ring-2 focus:ring-brand-400/20 sm:min-w-[200px]"
+              className="w-full appearance-none rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2 pr-9 text-sm font-medium text-neutral-900 outline-none transition-all focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 sm:min-w-[200px] dark:border-neutral-800 dark:bg-neutral-950 dark:text-white dark:focus:border-neutral-700 dark:focus:ring-neutral-800"
             >
               {accounts.map((a) => (
                 <option key={a.id} value={a.id}>
@@ -165,18 +166,8 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
                 </option>
               ))}
             </select>
-            <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500">
-              <svg
-                className="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
+            <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400">
+              <ChevronDown className="h-4 w-4" />
             </div>
           </div>
 
@@ -186,81 +177,43 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
               placeholder="Search username, email, tag…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-xl border border-white/8 bg-ink-900/60 py-2.5 pl-10 pr-4 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all focus:border-brand-400/50 focus:ring-2 focus:ring-brand-400/20"
+              className="w-full rounded-xl border border-neutral-200 bg-neutral-50 py-2 pl-9 pr-4 text-sm text-neutral-900 placeholder-neutral-400 outline-none transition-all focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-800 dark:bg-neutral-950 dark:text-white dark:placeholder-neutral-500 dark:focus:border-neutral-700 dark:focus:ring-neutral-800"
             />
-            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500">
-              <svg
-                className="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-            </div>
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-neutral-400 dark:text-neutral-500" />
           </div>
         </div>
 
         <button
           onClick={handleExportCSV}
           disabled={filteredContacts.length === 0}
-          className="btn-primary px-5 py-2.5 text-sm disabled:opacity-50"
+          className="btn-secondary px-4 py-2 text-xs font-medium disabled:opacity-50"
         >
-          <svg
-            className="h-4 w-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <path d="m7 10 5 5 5-5" />
-            <path d="M12 15V3" />
-          </svg>
+          <Download className="h-3.5 w-3.5" />
           Export CSV ({filteredContacts.length})
         </button>
       </div>
 
       {/* Leads Table Container */}
-      <div className="overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02]">
+      <div className="overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900/60">
         {filteredContacts.length === 0 ? (
-          <div className="px-6 py-16 text-center text-sm text-slate-500">
-            <svg
-              className="mx-auto mb-4 h-12 w-12 text-slate-700"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
+          <div className="px-6 py-16 text-center text-sm text-neutral-500 dark:text-neutral-400">
+            <Users className="mx-auto mb-3 h-10 w-10 text-neutral-400 dark:text-neutral-600" />
             No contacts match the active filter criteria.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
               <thead>
-                <tr className="border-b border-white/5 bg-white/[0.02] text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  <th className="px-6 py-4">User</th>
-                  <th className="px-6 py-4">IGSID</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Email</th>
-                  <th className="px-6 py-4">Tags</th>
-                  <th className="px-6 py-4">Last interaction</th>
+                <tr className="border-b border-neutral-200/80 bg-neutral-50/80 text-[10px] font-mono font-medium tracking-wider text-neutral-500 uppercase dark:border-neutral-800 dark:bg-neutral-950/60 dark:text-neutral-400">
+                  <th className="px-6 py-3.5">User</th>
+                  <th className="px-6 py-3.5">IGSID</th>
+                  <th className="px-6 py-3.5">Status</th>
+                  <th className="px-6 py-3.5">Email</th>
+                  <th className="px-6 py-3.5">Tags</th>
+                  <th className="px-6 py-3.5">Last interaction</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 text-sm text-slate-200">
+              <tbody className="divide-y divide-neutral-200/70 text-sm dark:divide-neutral-800">
                 {filteredContacts.map((c) => {
                   const hasTagInput = showTagInputs[c.id] ?? false;
                   const tagInputValue = tagInputs[c.id] ?? '';
@@ -269,50 +222,50 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
                   return (
                     <tr
                       key={c.id}
-                      className="transition-colors hover:bg-white/[0.02]"
+                      className="transition-colors hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40"
                     >
                       {/* User Info */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/8 bg-gradient-to-br from-brand-500/30 to-accent-500/30 text-xs font-semibold text-white">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-neutral-100 font-mono text-[11px] font-semibold text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200">
                             {c.username.substring(0, 2).toUpperCase()}
                           </div>
-                          <span className="font-medium text-white">
+                          <span className="font-medium text-neutral-900 dark:text-white">
                             @{c.username}
                           </span>
                         </div>
                       </td>
 
                       {/* IGSID */}
-                      <td className="px-6 py-4 font-mono text-xs text-slate-500">
+                      <td className="px-6 py-4 font-mono text-xs text-neutral-500 dark:text-neutral-400">
                         {c.igsid}
                       </td>
 
                       {/* Follow status */}
                       <td className="px-6 py-4">
                         {c.follows_business === null ? (
-                          <span className="inline-block rounded-md border border-white/8 bg-ink-900 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
+                          <span className="inline-block rounded-md border border-neutral-200 bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-400">
                             Not checked
                           </span>
                         ) : c.follows_business ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                          <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/20 bg-emerald-50/80 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-400">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                             Following
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 rounded-md border border-red-500/20 bg-red-500/10 px-2 py-0.5 text-[10px] font-semibold text-red-300">
-                            <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
+                          <span className="inline-flex items-center gap-1.5 rounded-md border border-neutral-200 bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-400">
+                            <span className="h-1.5 w-1.5 rounded-full bg-neutral-400" />
                             Not following
                           </span>
                         )}
                       </td>
 
                       {/* Email */}
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 text-xs">
                         {c.email ? (
-                          <span className="text-slate-100">{c.email}</span>
+                          <span className="font-mono text-neutral-900 dark:text-white">{c.email}</span>
                         ) : (
-                          <span className="italic text-slate-500">
+                          <span className="text-neutral-400">
                             None collected
                           </span>
                         )}
@@ -324,7 +277,7 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
                           {c.tags.map((tag) => (
                             <span
                               key={tag}
-                              className="inline-flex items-center gap-1 rounded-md border border-white/8 bg-ink-900 px-2 py-0.5 text-[10px] font-medium text-slate-200"
+                              className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-700 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300"
                             >
                               {tag}
                               <button
@@ -332,21 +285,10 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
                                   handleRemoveTag(c.id, c.tags, tag)
                                 }
                                 disabled={loading}
-                                className="text-slate-500 transition-colors hover:text-white"
+                                className="text-neutral-400 transition-colors hover:text-black dark:hover:text-white"
                                 aria-label={`Remove tag ${tag}`}
                               >
-                                <svg
-                                  className="h-3 w-3"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2.5"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="M18 6 6 18" />
-                                  <path d="m6 6 12 12" />
-                                </svg>
+                                <X className="h-2.5 w-2.5" />
                               </button>
                             </span>
                           ))}
@@ -381,7 +323,7 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
                                     });
                                   }, 200);
                                 }}
-                                className="rounded-md border border-white/8 bg-ink-900 px-1.5 py-0.5 text-xs text-slate-100 outline-none focus:border-brand-400/50"
+                                className="rounded-md border border-neutral-300 bg-white px-1.5 py-0.5 text-xs text-neutral-900 outline-none focus:border-black dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white"
                               />
                             </form>
                           ) : (
@@ -393,17 +335,17 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
                                 })
                               }
                               disabled={loading}
-                              className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-white/8 bg-ink-900 text-xs text-slate-400 transition-colors hover:border-white/15 hover:text-white"
+                              className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-neutral-200 bg-neutral-100 text-xs text-neutral-500 transition-colors hover:border-neutral-400 hover:text-black dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-700 dark:hover:text-white"
                               aria-label="Add tag"
                             >
-                              +
+                              <Plus className="h-3 w-3" />
                             </button>
                           )}
                         </div>
                       </td>
 
                       {/* Last Interaction */}
-                      <td className="px-6 py-4 text-xs text-slate-400">
+                      <td className="px-6 py-4 text-xs text-neutral-500 dark:text-neutral-400">
                         {new Date(c.last_interaction_at).toLocaleString(
                           undefined,
                           {

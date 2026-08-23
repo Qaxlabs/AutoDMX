@@ -4,25 +4,25 @@ import { AppShell } from '../_components/AppShell';
 export default function PrivacyPage() {
   return (
     <AppShell variant="marketing" hideFooter>
-      <div className="mx-auto max-w-3xl px-5 py-14 sm:px-8 sm:py-20">
+      <div className="mx-auto max-w-3xl px-5 py-12 sm:px-8 sm:py-16">
         <div className="mb-8">
           <BackToHome />
         </div>
 
-        <article className="overflow-hidden rounded-3xl border border-white/5 bg-white/[0.02] p-8 shadow-2xl backdrop-blur-sm sm:p-12">
-          <header className="border-b border-white/5 pb-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
+        <article className="overflow-hidden rounded-3xl border border-neutral-200/80 bg-white p-8 shadow-sm sm:p-12 dark:border-neutral-800 dark:bg-neutral-900/60 dark:shadow-2xl">
+          <header className="border-b border-neutral-200/80 pb-6 dark:border-neutral-800">
+            <p className="text-[11px] font-mono font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
               Legal
             </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl dark:text-white">
               Privacy policy
             </h1>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-neutral-400 dark:text-neutral-500">
               Last updated: June 29, 2026
             </p>
           </header>
 
-          <div className="mt-8 space-y-7 text-sm leading-relaxed text-slate-300">
+          <div className="mt-8 space-y-7 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
             <p>
               AutoDMX is an open-source, self-hosted Instagram automation tool.
               This deployment is operated by{' '}
@@ -30,10 +30,10 @@ export default function PrivacyPage() {
               Instagram account.
             </p>
 
-            <div className="h-px bg-white/5" />
+            <div className="h-px bg-neutral-200/70 dark:bg-neutral-800" />
 
             <Section title="1. Data we process">
-              <ul className="ml-4 list-disc space-y-1.5 pl-2 text-slate-400">
+              <ul className="ml-4 list-disc space-y-1.5 pl-2 text-neutral-600 dark:text-neutral-400">
                 <li>
                   Instagram comments and direct messages sent to the connected
                   account.
@@ -59,9 +59,8 @@ export default function PrivacyPage() {
             <Section title="3. Data storage">
               Data is stored in a Supabase (PostgreSQL) database controlled by
               the account operator. Instagram access tokens are encrypted at
-              rest. We do not sell or share data with third parties beyond
-              what&apos;s required to operate the service (Meta&apos;s Instagram
-              API).
+              rest with AES-256-GCM. We do not sell or share data with third parties beyond
+              what&apos;s required to operate the service (Meta&apos;s Instagram API).
             </Section>
 
             <Section title="4. Data retention">
@@ -74,7 +73,7 @@ export default function PrivacyPage() {
               <ContactEmail variant="strong" />.
             </Section>
 
-            <div className="h-px bg-white/5" />
+            <div className="h-px bg-neutral-200/70 dark:bg-neutral-800" />
 
             <Section title="Contact">
               <ContactBlock />
@@ -95,8 +94,8 @@ function Section({
 }) {
   return (
     <section>
-      <h2 className="text-base font-semibold text-white">{title}</h2>
-      <div className="mt-2 text-slate-400">{children}</div>
+      <h2 className="text-base font-semibold text-neutral-900 dark:text-white">{title}</h2>
+      <div className="mt-2 text-neutral-600 dark:text-neutral-400 leading-relaxed">{children}</div>
     </section>
   );
 }

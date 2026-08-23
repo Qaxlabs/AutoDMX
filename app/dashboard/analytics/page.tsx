@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
 import { AppShell } from '../../_components/AppShell';
+import { BarChart3, AlertCircle, ChevronDown, MessageSquare, Send, UserCheck, MousePointerClick } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,24 +41,13 @@ export default async function AnalyticsPage({
       return (
         <AppShell variant="dashboard" activeNav="analytics">
           <div className="mx-auto flex max-w-3xl flex-col items-center px-5 py-24 text-center sm:px-8">
-            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.04]">
-              <svg
-                className="h-7 w-7 text-brand-300"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 3v18h18" />
-                <path d="m7 14 4-4 4 4 5-6" />
-              </svg>
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+              <BarChart3 className="h-6 w-6 text-neutral-600 dark:text-neutral-400" />
             </div>
-            <h2 className="text-2xl font-semibold tracking-tight text-white">
+            <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-white">
               No connected accounts
             </h2>
-            <p className="mt-2 max-w-sm text-sm text-slate-400">
+            <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-400">
               Connect an Instagram Creator or Business account in settings to
               start seeing analytics.
             </p>
@@ -189,80 +179,68 @@ export default async function AnalyticsPage({
       <AppShell variant="dashboard" activeNav="analytics">
         <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
           {/* Page Title & Account Switcher */}
-          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
+              <p className="text-[11px] font-mono font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
                 Performance
               </p>
-              <h1 className="mt-1 text-3xl font-semibold tracking-tight text-white">
+              <h1 className="mt-1 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-white">
                 Analytics
               </h1>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
                 Trigger counts, link clicks, and conversion rates per
                 automation.
               </p>
             </div>
 
             <AccountSwitcher accounts={accounts} activeAccountId={activeAccount.id} />
-
           </div>
 
           {/* Aggregates Overview Cards */}
-          <div className="mb-12 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="mb-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
             <MetricCard
+              icon={<MessageSquare className="h-4 w-4" />}
               label="Comments received"
               value={totalComments}
-              accent="from-brand-500/30 to-brand-500/0"
             />
             <MetricCard
+              icon={<Send className="h-4 w-4" />}
               label="DMs acknowledged"
               value={totalDmsOpened}
-              accent="from-cyan-400/30 to-cyan-400/0"
             />
             <MetricCard
+              icon={<UserCheck className="h-4 w-4" />}
               label="Follow pass rate"
               value={
                 totalFollowChecks > 0 ? `${aggregateFollowRate}%` : '100%'
               }
-              accent="from-emerald-400/30 to-emerald-400/0"
             />
             <MetricCard
+              icon={<MousePointerClick className="h-4 w-4" />}
               label="Total link clicks"
               value={totalClicks}
-              accent="from-accent-500/30 to-accent-500/0"
             />
           </div>
 
           {/* Automations Performance Table / Empty State */}
           {!hasActivity ? (
-            <div className="mx-auto max-w-4xl rounded-3xl border border-dashed border-white/8 bg-white/[0.015] px-6 py-20 text-center text-slate-500">
-              <svg
-                className="mx-auto mb-4 h-12 w-12 text-slate-700"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 3v18h18" />
-                <path d="m7 14 4-4 4 4 5-6" />
-              </svg>
-              <h3 className="text-lg font-semibold text-slate-200">
+            <div className="mx-auto max-w-4xl rounded-3xl border border-dashed border-neutral-200 bg-white/50 px-6 py-20 text-center text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900/20 dark:text-neutral-400">
+              <BarChart3 className="mx-auto mb-3 h-10 w-10 text-neutral-400 dark:text-neutral-600" />
+              <h3 className="text-base font-semibold text-neutral-900 dark:text-white">
                 No activity yet
               </h3>
-              <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed">
+              <p className="mx-auto mt-1 max-w-md text-xs leading-relaxed text-neutral-500">
                 Once comments are detected and automations trigger responses or
                 track link clicks, your analytics stats will appear here.
               </p>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02]">
-              <div className="border-b border-white/5 bg-white/[0.02] p-5">
-                <h3 className="text-base font-semibold text-white">
+            <div className="overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900/60">
+              <div className="border-b border-neutral-200/80 bg-neutral-50/50 p-5 dark:border-neutral-800 dark:bg-neutral-900/80">
+                <h3 className="text-base font-semibold text-neutral-900 dark:text-white">
                   Automation performance
                 </h3>
-                <p className="mt-0.5 text-xs text-slate-500">
+                <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
                   Detailed breakdown of conversions per rule.
                 </p>
               </div>
@@ -270,16 +248,16 @@ export default async function AnalyticsPage({
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left">
                   <thead>
-                    <tr className="border-b border-white/5 bg-white/[0.02] text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                      <th className="px-6 py-4">Automation</th>
-                      <th className="px-6 py-4">Scope / Post</th>
-                      <th className="px-6 py-4 text-center">Comments</th>
-                      <th className="px-6 py-4 text-center">DMs</th>
-                      <th className="px-6 py-4 text-center">Follow rate</th>
-                      <th className="px-6 py-4 text-center">Clicks</th>
+                    <tr className="border-b border-neutral-200/80 bg-neutral-50/80 text-[10px] font-mono font-medium tracking-wider text-neutral-500 uppercase dark:border-neutral-800 dark:bg-neutral-950/60 dark:text-neutral-400">
+                      <th className="px-6 py-3.5">Automation</th>
+                      <th className="px-6 py-3.5">Scope / Post</th>
+                      <th className="px-6 py-3.5 text-center">Comments</th>
+                      <th className="px-6 py-3.5 text-center">DMs</th>
+                      <th className="px-6 py-3.5 text-center">Follow rate</th>
+                      <th className="px-6 py-3.5 text-center">Clicks</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5 text-sm text-slate-200">
+                  <tbody className="divide-y divide-neutral-200/70 text-sm dark:divide-neutral-800">
                     {statsList.map((stat) => {
                       const checks =
                         stat.followPassed + stat.followFailed;
@@ -291,36 +269,36 @@ export default async function AnalyticsPage({
                       return (
                         <tr
                           key={stat.id}
-                          className="transition-colors hover:bg-white/[0.02]"
+                          className="transition-colors hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40"
                         >
-                          <td className="px-6 py-4 font-medium text-white">
+                          <td className="px-6 py-4 font-medium text-neutral-900 dark:text-white">
                             {stat.name}
                           </td>
                           <td className="px-6 py-4 text-xs">
                             {stat.media_scope === 'any' ? (
-                              <span className="inline-block rounded-md border border-white/8 bg-ink-900 px-2 py-0.5 text-slate-300">
+                              <span className="inline-block rounded-md border border-neutral-200 bg-neutral-100 px-2 py-0.5 text-neutral-700 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300">
                                 Any post
                               </span>
                             ) : (
-                              <span className="inline-block rounded-md border border-brand-500/20 bg-brand-500/10 px-2 py-0.5 font-mono text-[11px] text-brand-300">
+                              <span className="inline-block rounded-md border border-neutral-200 bg-neutral-100 px-2 py-0.5 font-mono text-[11px] text-neutral-700 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300">
                                 {stat.media_id?.slice(0, 12) ?? '—'}
                               </span>
                             )}
                           </td>
-                          <td className="px-6 py-4 text-center font-semibold text-white">
+                          <td className="px-6 py-4 text-center font-semibold text-neutral-900 dark:text-white">
                             {stat.comments}
                           </td>
-                          <td className="px-6 py-4 text-center font-semibold text-white">
+                          <td className="px-6 py-4 text-center font-semibold text-neutral-900 dark:text-white">
                             {stat.dmsOpened}
                           </td>
-                          <td className="px-6 py-4 text-center font-semibold text-white">
+                          <td className="px-6 py-4 text-center font-semibold text-neutral-900 dark:text-white">
                             {followRate === null ? (
-                              <span className="text-slate-500">N/A</span>
+                              <span className="text-neutral-400">N/A</span>
                             ) : (
                               `${followRate}%`
                             )}
                           </td>
-                          <td className="px-6 py-4 text-center font-semibold text-white">
+                          <td className="px-6 py-4 text-center font-semibold text-neutral-900 dark:text-white">
                             {stat.clicks}
                           </td>
                         </tr>
@@ -351,24 +329,12 @@ export default async function AnalyticsPage({
     console.error('[Analytics Page Server Exception]', err);
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <div className="max-w-md rounded-2xl border border-red-500/20 bg-red-500/5 p-8">
-          <svg
-            className="mx-auto mb-4 h-12 w-12 text-red-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
-            <path d="M12 9v4" />
-            <path d="M12 17h.01" />
-          </svg>
-          <h1 className="text-xl font-semibold text-white">
+        <div className="max-w-md rounded-2xl border border-red-200 bg-red-50/60 p-8 dark:border-red-900/40 dark:bg-red-950/20">
+          <AlertCircle className="mx-auto mb-4 h-10 w-10 text-red-500" />
+          <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">
             Failed to load analytics
           </h1>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
             An unexpected error occurred while compiling your analytics data.
           </p>
           <div className="mt-6 flex justify-center gap-3">
@@ -386,31 +352,26 @@ export default async function AnalyticsPage({
 }
 
 function MetricCard({
+  icon,
   label,
   value,
-  accent,
 }: {
+  icon: React.ReactNode;
   label: string;
   value: number | string;
-  accent: string;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-5">
-      <div
-        aria-hidden="true"
-        className={`pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br ${accent} blur-2xl`}
-      />
-      <div className="relative">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+    <div className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/60">
+      <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400">
+        {icon}
+        <span className="text-[11px] font-mono font-medium tracking-wider uppercase">
           {label}
-        </div>
-        <div className="mt-2 text-3xl font-semibold text-white">{value}</div>
+        </span>
       </div>
+      <div className="mt-3 text-3xl font-semibold text-neutral-900 dark:text-white">{value}</div>
     </div>
   );
 }
-
-'use client';
 
 function AccountSwitcher({
   accounts,
@@ -428,7 +389,7 @@ function AccountSwitcher({
           url.searchParams.set('accountId', e.target.value);
           window.location.href = url.toString();
         }}
-        className="w-full appearance-none rounded-xl border border-white/8 bg-ink-900/60 px-4 py-2.5 pr-10 text-sm font-medium text-slate-100 outline-none transition-all focus:border-brand-400/50 focus:ring-2 focus:ring-brand-400/20 sm:min-w-[200px]"
+        className="w-full appearance-none rounded-xl border border-neutral-200 bg-white px-3.5 py-2 pr-9 text-sm font-medium text-neutral-900 shadow-sm outline-none transition-all focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 sm:min-w-[200px] dark:border-neutral-800 dark:bg-neutral-900 dark:text-white dark:focus:border-neutral-700 dark:focus:ring-neutral-800"
       >
         {accounts.map((a) => (
           <option key={a.id} value={a.id}>
@@ -436,18 +397,8 @@ function AccountSwitcher({
           </option>
         ))}
       </select>
-      <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500">
-        <svg
-          className="h-4 w-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="m6 9 6 6 6-6" />
-        </svg>
+      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400">
+        <ChevronDown className="h-4 w-4" />
       </div>
     </div>
   );

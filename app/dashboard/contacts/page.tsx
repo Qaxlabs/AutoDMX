@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
 import ContactsTable from './ContactsTable';
 import { AppShell } from '../../_components/AppShell';
+import { Users, AlertCircle } from 'lucide-react';
 
 type Contact = {
   id: string;
@@ -33,8 +34,11 @@ export default async function ContactsPage({
   if (accountsError) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <h1 className="text-xl font-semibold text-red-400">Database error</h1>
-        <p className="mt-2 text-sm text-slate-400">{accountsError.message}</p>
+        <div className="rounded-2xl border border-red-200 bg-red-50/60 p-6 dark:border-red-900/40 dark:bg-red-950/20">
+          <AlertCircle className="mx-auto mb-2 h-8 w-8 text-red-500" />
+          <h1 className="text-lg font-semibold text-red-700 dark:text-red-400">Database error</h1>
+          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">{accountsError.message}</p>
+        </div>
       </div>
     );
   }
@@ -44,26 +48,13 @@ export default async function ContactsPage({
     return (
       <AppShell variant="dashboard" activeNav="contacts">
         <div className="mx-auto flex max-w-3xl flex-col items-center px-5 py-24 text-center sm:px-8">
-          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.04]">
-            <svg
-              className="h-7 w-7 text-brand-300"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
+          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+            <Users className="h-6 w-6 text-neutral-600 dark:text-neutral-400" />
           </div>
-          <h2 className="text-2xl font-semibold tracking-tight text-white">
+          <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-white">
             No connected accounts
           </h2>
-          <p className="mt-2 max-w-sm text-sm text-slate-400">
+          <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-400">
             Connect your Instagram Creator or Business account in settings to
             start collecting contacts.
           </p>
@@ -92,8 +83,11 @@ export default async function ContactsPage({
   if (contactsError) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <h1 className="text-xl font-semibold text-red-400">Database error</h1>
-        <p className="mt-2 text-sm text-slate-400">{contactsError.message}</p>
+        <div className="rounded-2xl border border-red-200 bg-red-50/60 p-6 dark:border-red-900/40 dark:bg-red-950/20">
+          <AlertCircle className="mx-auto mb-2 h-8 w-8 text-red-500" />
+          <h1 className="text-lg font-semibold text-red-700 dark:text-red-400">Database error</h1>
+          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">{contactsError.message}</p>
+        </div>
       </div>
     );
   }
@@ -105,18 +99,18 @@ export default async function ContactsPage({
       <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
         <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
+            <p className="text-[11px] font-mono font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
               Lead capture
             </p>
-            <h1 className="mt-1 text-3xl font-semibold tracking-tight text-white">
+            <h1 className="mt-1 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-white">
               Contacts
             </h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
               Every person who interacted with one of your automations.
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          <div className="flex items-center gap-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             Synced from Supabase in real time
           </div>
         </div>

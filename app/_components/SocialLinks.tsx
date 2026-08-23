@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AutoDMXLogo } from "./AutoDMXLogo";
 
 /**
  * Central place to declare the operator's social handles.
@@ -16,7 +17,7 @@ export const SOCIALS = {
     href: "https://www.youtube.com/@Qaxlabs",
   },
   x: {
-    label: "X (Twitter)",
+    label: "X",
     handle: "@qaxlabs",
     href: "https://x.com/qaxlabs",
   },
@@ -101,7 +102,7 @@ export type SocialLinkProps = {
 };
 
 /**
- * A single clickable social link (anchor that opens the handle in a new tab).
+ * A single clickable social link.
  */
 export function SocialLink({
   network,
@@ -123,14 +124,16 @@ export function SocialLink({
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`${s.label} — ${s.handle}`}
-        className={`group inline-flex items-center gap-2.5 rounded-xl border border-white/8 bg-white/[0.03] px-3.5 py-2.5 text-sm font-medium text-slate-200 transition-all hover:border-white/15 hover:bg-white/[0.06] hover:text-white ${className}`}
+        className={`group inline-flex items-center gap-3 rounded-xl border border-neutral-200/80 bg-white/80 px-4 py-3 text-sm font-medium text-neutral-800 shadow-sm transition-all hover:border-neutral-400 hover:bg-neutral-50 hover:text-black dark:border-neutral-800 dark:bg-neutral-900/80 dark:text-neutral-200 dark:hover:border-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-white ${className}`}
       >
-        {Icon}
-        <span className="flex flex-col leading-tight">
-          <span className="text-[10px] uppercase tracking-wider text-slate-500 group-hover:text-slate-300 transition-colors">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+          {Icon}
+        </span>
+        <span className="flex flex-col text-left leading-tight">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
             {s.label}
           </span>
-          <span>{s.handle}</span>
+          <span className="text-sm font-medium">{s.handle}</span>
         </span>
       </a>
     );
@@ -142,7 +145,7 @@ export function SocialLink({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${s.label} — ${s.handle}`}
-      className={`group inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/8 bg-white/[0.03] text-slate-300 transition-all hover:border-white/20 hover:bg-white/[0.07] hover:text-white ${className}`}
+      className={`group inline-flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200/70 bg-white text-neutral-600 transition-all hover:border-neutral-400 hover:bg-neutral-50 hover:text-black dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-white ${className}`}
     >
       {Icon}
     </a>
@@ -150,7 +153,6 @@ export function SocialLink({
 }
 
 export type SocialLinksProps = {
-  /** Which networks to show, in this order. */
   networks?: SocialKey[];
   variant?: "icon-only" | "with-handle";
   className?: string;
@@ -158,8 +160,7 @@ export type SocialLinksProps = {
 };
 
 /**
- * Renders a row of clickable social icons. Used in nav, footer, and the home
- * "Community" section.
+ * Renders a row of clickable social icons.
  */
 export function SocialLinks({
   networks = ["instagram", "youtube", "x", "github"],
@@ -169,7 +170,7 @@ export function SocialLinks({
 }: SocialLinksProps) {
   return (
     <div
-      className={`flex flex-wrap items-center gap-2.5 ${className}`}
+      className={`flex flex-wrap items-center gap-2 ${className}`}
       role="list"
     >
       {networks.map((n) => (
@@ -189,11 +190,8 @@ export function SocialLinks({
 /* Brand mark                                                         */
 /* ------------------------------------------------------------------ */
 
-import { AutoDMXIcon } from "./AutoDMXLogo";
-
 export type BrandMarkProps = {
   className?: string;
-  /** When true, renders a small mark next to the wordmark */
   withMark?: boolean;
 };
 
@@ -201,24 +199,13 @@ export type BrandMarkProps = {
  * The official AutoDMX wordmark with the brand icon mark.
  * Always links back to the home page.
  */
-export function BrandMark({ className = "", withMark = true }: BrandMarkProps) {
+export function BrandMark({ className = "" }: BrandMarkProps) {
   return (
     <Link
       href="/"
-      className={`group inline-flex items-center gap-2.5 ${className}`}
+      className={`group inline-flex items-center transition-opacity hover:opacity-90 ${className}`}
     >
-      {withMark && (
-        <div className="relative flex items-center justify-center">
-          <div className="absolute inset-0 rounded-full bg-brand-500/20 blur-md transition-opacity duration-300 group-hover:opacity-100 opacity-60" />
-          <AutoDMXIcon className="relative h-8 w-8 transition-transform duration-300 group-hover:scale-105" />
-        </div>
-      )}
-      <span className="text-[1.1rem] font-bold tracking-tight text-white">
-        Auto
-        <span className="bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
-          DMX
-        </span>
-      </span>
+      <AutoDMXLogo variant="horizontal" />
     </Link>
   );
 }
