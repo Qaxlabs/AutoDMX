@@ -14,28 +14,64 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const SITE_URL = "https://autodmx.netlify.app";
+const OG_IMAGE = "/og-image.png";
+
 export const metadata: Metadata = {
-  title: "AutoDMX — Turn Instagram Comments into Conversions",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "AutoDMX — Turn Instagram Comments into Conversions",
+    template: "%s · AutoDMX",
+  },
   description:
-    "The self-hosted Instagram automation platform. Capture leads, deliver links, and grow sales — straight from your comments.",
+    "Self-hosted, open-source Instagram comment-to-DM automation. Capture leads, deliver links, and grow sales straight from your comments. Built by Qaxlabs.",
   keywords: [
     "Instagram automation",
+    "Instagram DM bot",
     "comment to DM",
+    "comment-to-DM",
+    "Instagram comment automation",
     "lead generation",
+    "Instagram marketing tool",
+    "Instagram auto reply",
+    "open source",
+    "self-hosted",
+    "Next.js",
+    "Supabase",
+    "Meta Graph API",
     "AutoDMX",
     "Qaxlabs",
   ],
+  authors: [{ name: "Qaxlabs", url: "https://github.com/Qaxlabs" }],
+  creator: "Qaxlabs",
+  publisher: "Qaxlabs",
+  applicationName: "AutoDMX",
+  category: "Developer Tools",
+  alternates: { canonical: "/" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
   openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: SITE_URL,
+    siteName: "AutoDMX",
     title: "AutoDMX — Turn Instagram Comments into Conversions",
     description:
-      "Self-hosted, open-source Instagram comment-to-DM automation by Qaxlabs.",
-    type: "website",
+      "Self-hosted, open-source Instagram comment-to-DM automation. Capture leads, deliver links, and grow sales straight from your comments.",
+    images: [
+      { url: OG_IMAGE, width: 1200, height: 630, alt: "AutoDMX — Instagram comment-to-DM automation" },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "AutoDMX — Turn Instagram Comments into Conversions",
     description:
-      "Self-hosted, open-source Instagram comment-to-DM automation by Qaxlabs.",
+      "Self-hosted, open-source Instagram comment-to-DM automation. Capture leads and grow sales straight from your comments.",
+    images: [OG_IMAGE],
+    creator: "@qaxlabs",
   },
 };
 

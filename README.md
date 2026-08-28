@@ -1,28 +1,70 @@
 <div align="center">
 
-<img src="./public/logo.svg" alt="AutoDMX — Automate. Engage. Convert." width="480" />
+<img src="./public/logo.svg" alt="AutoDMX — Automate. Engage. Convert." width="360" />
 
 <br />
 
-**Turn Instagram Comments into Conversions — Instantly.**
+# AutoDMX
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Postgres-green)](https://supabase.com/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+### Turn Instagram Comments into Conversions — Instantly.
 
-The self-hosted Instagram comment-to-DM automation platform. Engage your audience, deliver lead magnets, and grow sales — straight from your comments.
+> **Self-hosted, open-source Instagram comment-to-DM automation.**
+> Watch your Instagram posts for trigger keywords, auto-reply with a personalized DM, and
+> deliver links, lead magnets, or call-to-actions — built with **Next.js 14**, **TypeScript**, and **Supabase**.
 
-Built by **[Qaxlabs](https://github.com/Qaxlabs)**. Follow along:
+<!--
+Repo metadata (helps GitHub, Google, Bing, Brave, DuckDuckGo, and AI search index this README):
+
+name: AutoDMX
+description: Self-hosted, open-source Instagram comment-to-DM automation. Capture leads, deliver links, and grow sales — straight from your comments.
+homepage: https://autodmx.netlify.app
+topics: instagram-automation, instagram-bot, comment-to-dm, instagram-dm, auto-reply, lead-generation, instagram-marketing, social-media-automation, meta-graph-api, manychat-alternative, self-hosted, open-source, nextjs, typescript, supabase, tailwindcss, webhooks
+-->
+
+<p align="center">
+  <a href="https://github.com/Qaxlabs/AutoDMX/stargazers"><img src="https://img.shields.io/github/stars/Qaxlabs/AutoDMX?style=social" alt="GitHub stars" /></a>
+  <a href="https://github.com/Qaxlabs/AutoDMX/network/members"><img src="https://img.shields.io/github/forks/Qaxlabs/AutoDMX?style=social" alt="GitHub forks" /></a>
+  <a href="https://github.com/Qaxlabs/AutoDMX/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+  <a href="https://github.com/Qaxlabs/AutoDMX/issues"><img src="https://img.shields.io/github/issues/Qaxlabs/AutoDMX" alt="Open issues" /></a>
+  <a href="https://github.com/Qaxlabs/AutoDMX/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-14-black?logo=nextdotjs" alt="Next.js 14" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" alt="TypeScript 5" />
+  <img src="https://img.shields.io/badge/Supabase-Postgres-3FCF8E?logo=supabase&logoColor=white" alt="Supabase" />
+  <img src="https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Meta-Graph_API-1877F2?logo=meta&logoColor=white" alt="Meta Graph API" />
+</p>
+
+<p align="center">
+  <a href="https://autodmx.qaxlabs.com"><strong>Website</strong></a> ·
+  <a href="https://autodmx.qaxlabs.com/docs"><strong>Docs</strong></a> ·
+  <a href="#-demo"><strong>Demo</strong></a> ·
+  <a href="#-quick-start"><strong>Quick Start</strong></a> ·
+  <a href="https://github.com/Qaxlabs/AutoDMX/discussions"><strong>Discussions</strong></a>
+</p>
+
+Built by **[Qaxlabs](https://github.com/Qaxlabs)** ·
 [Instagram](https://instagram.com/qaxlabs) ·
 [YouTube](https://www.youtube.com/@Qaxlabs) ·
-[X](https://x.com/qaxlabs) ·
-[GitHub](https://github.com/Qaxlabs/AutoDMX)
-
-[Features](#-features) • [Demo](#-demo) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](#-contributing) • [License](#-license)
+[X](https://x.com/qaxlabs)
 
 </div>
+
+---
+
+## 🔎 What is AutoDMX?
+
+**AutoDMX** is an open-source, self-hosted **Instagram automation platform** that turns public Instagram comments into private DMs. Use it to:
+
+- 🤖 Auto-reply to comments with **keyword triggers** (`"PRICE"`, `"LINK"`, `"INFO"` …)
+- 📩 Send **personalized DMs** with links, lead magnets, coupons, or PDFs
+- 📈 Track **click-throughs and conversions** in a built-in dashboard
+- 🛡️ Stay compliant with **Meta rate limits** (rate-limiting enforced at the database level)
+- 🔁 Optionally **gate DMs behind a follow** to grow your audience
+
+It is the **ManyChat / IGdm alternative you can self-host** — no monthly fee, no vendor lock-in, full data ownership.
 
 ---
 
@@ -42,9 +84,27 @@ Built by **[Qaxlabs](https://github.com/Qaxlabs)**. Follow along:
 ---
 
 ## 🖼️ Demo
-checkout the full video:
 
-https://youtu.be/Yu7mTyr_rkU?si=sXX_lNiv_46bjbCT
+Watch the full walkthrough on YouTube:
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=Yu7mTyr_rkU" target="_blank" rel="noopener">
+    <img
+      src="https://i.ytimg.com/vi/Yu7mTyr_rkU/maxresdefault.jpg"
+      alt="AutoDMX — Demo Walkthrough"
+      width="720"
+      style="border-radius:12px;border:1px solid #e4e4e7;"
+    />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=Yu7mTyr_rkU" target="_blank" rel="noopener">
+    <strong>▶ Watch on YouTube</strong>
+  </a>
+  &nbsp;·&nbsp;
+  <a href="https://youtu.be/Yu7mTyr_rkU" target="_blank" rel="noopener">Short link</a>
+</p>
 
 The dashboard provides a clean interface to:
 
@@ -228,6 +288,33 @@ In short: AutoDMX is free and open-source software. You are free to use, modify,
 - 🐛 **Bug reports & features:** [GitHub Issues](https://github.com/Qaxlabs/AutoDMX/issues)
 - 💬 **Questions & discussion:** [GitHub Discussions](https://github.com/Qaxlabs/AutoDMX/discussions)
 - 📖 **Documentation:** [README](./README.md) and inline code comments
+
+---
+
+## 🔍 Topics / Keywords
+
+`instagram-automation` · `instagram-bot` · `comment-to-dm` · `instagram-dm` · `auto-reply` ·
+`lead-generation` · `instagram-marketing` · `social-media-automation` · `meta-graph-api` ·
+`manychat-alternative` · `self-hosted` · `open-source` · `nextjs` · `typescript` ·
+`supabase` · `tailwindcss` · `webhooks`
+
+---
+
+## 🌟 Show your support
+
+If AutoDMX saved you a subscription fee or made your launch smoother — **give it a ⭐** at the top of this page. Stars are how GitHub (and Google) decide a repo is worth showing to other developers, so it really helps.
+
+---
+
+## 📈 Why developers pick AutoDMX
+
+| | AutoDMX | ManyChat | IGdm Pro |
+| --- | :---: | :---: | :---: |
+| Self-hosted / data ownership | ✅ | ❌ | ❌ |
+| Open source (MIT) | ✅ | ❌ | ❌ |
+| Meta-compliant rate limiting | ✅ | ✅ | ⚠️ |
+| Built-in click & conversion analytics | ✅ | 💲 | ❌ |
+| One-time deploy on free tiers | ✅ | ❌ | ❌ |
 
 ---
 
