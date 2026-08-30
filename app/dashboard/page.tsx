@@ -16,6 +16,29 @@ type Post = {
   timestamp: string;
 };
 
+function getInstagramSyncMessage(apiError: string) {
+  const normalized = apiError.toLowerCase();
+  const isInvalidToken =
+    normalized.includes('error validating access token') ||
+    normalized.includes('session has been invalidated') ||
+    normalized.includes('access token');
+
+  if (isInvalidToken) {
+    return {
+      title: 'Instagram token needs refresh',
+      body:
+        'The saved Instagram access token is no longer valid. Generate a new long-lived token, update .env.local, then refresh it from Settings.',
+      action: 'Open settings',
+    };
+  }
+
+  return {
+    title: 'Failed to sync with Instagram',
+    body: 'Instagram could not return your latest posts and reels right now.',
+    action: 'Check credentials',
+  };
+}
+
 export default async function Dashboard({
   searchParams,
 }: {
@@ -86,7 +109,7 @@ export default async function Dashboard({
                 Setting things up
               </h2>
               <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-400">
-                Connecting your initial Instagram account. One moment…
+                Connecting your initial Instagram account. One moment...
               </p>
             </div>
           )}
@@ -169,14 +192,19 @@ export default async function Dashboard({
             <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
             <div>
               <h4 className="font-semibold text-neutral-900 dark:text-white">
-                Failed to sync with Instagram
+                {getInstagramSyncMessage(apiError).title}
               </h4>
-              <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">{apiError}</p>
+              <p className="mt-1 text-xs text-neutral-700 dark:text-neutral-300">
+                {getInstagramSyncMessage(apiError).body}
+              </p>
+              <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-500">
+                Details: {apiError}
+              </p>
               <Link
                 href="/dashboard/settings"
                 className="mt-3 inline-block text-xs font-semibold text-neutral-900 underline dark:text-white hover:opacity-80"
               >
-                Update credentials in settings →
+                {getInstagramSyncMessage(apiError).action} -&gt;
               </Link>
             </div>
           </div>

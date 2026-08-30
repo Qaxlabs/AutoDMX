@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
 import { AppShell } from '../../_components/AppShell';
 import { SocialLinks } from '../../_components/SocialLinks';
-import { AlertCircle } from 'lucide-react';
+import { refreshInstagramCredentials } from './actions';
+import { AlertCircle, CheckCircle2, RefreshCw } from 'lucide-react';
 
 export default async function SettingsPage({
   searchParams,
@@ -36,6 +37,13 @@ export default async function SettingsPage({
           <div className="mb-8 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50/60 p-3.5 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-300">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
             <span>{decodeURIComponent(searchParams.error)}</span>
+          </div>
+        )}
+
+        {searchParams.success && (
+          <div className="mb-8 flex items-start gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50/60 p-3.5 text-sm text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-300">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{decodeURIComponent(searchParams.success)}</span>
           </div>
         )}
 
@@ -75,6 +83,7 @@ export default async function SettingsPage({
                       <th className="px-6 py-3.5">IG User ID</th>
                       <th className="px-6 py-3.5">Meta App ID</th>
                       <th className="px-6 py-3.5">Date connected</th>
+                      <th className="px-6 py-3.5 text-right">Token</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-200/70 text-sm dark:divide-neutral-800">
@@ -104,6 +113,18 @@ export default async function SettingsPage({
                             { year: 'numeric', month: 'short', day: 'numeric' }
                           )}
                         </td>
+                        <td className="px-6 py-4 text-right">
+                          <form action={refreshInstagramCredentials}>
+                            <input type="hidden" name="accountId" value={account.id} />
+                            <button
+                              type="submit"
+                              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-950 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:border-neutral-700 dark:hover:bg-neutral-900 dark:hover:text-white"
+                            >
+                              <RefreshCw className="h-3.5 w-3.5" />
+                              Refresh token
+                            </button>
+                          </form>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -120,7 +141,7 @@ export default async function SettingsPage({
               </h2>
               <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
                 Configure these in <code className="font-mono text-neutral-800 dark:text-neutral-200">.env.local</code>{' '}
-                and restart or reload the dashboard.
+                and use Refresh token above to update the encrypted value in Supabase.
               </p>
             </header>
             <div className="grid gap-3 p-5 sm:grid-cols-3">
