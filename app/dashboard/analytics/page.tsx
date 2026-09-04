@@ -33,7 +33,25 @@ export default async function AnalyticsPage({
       .order('created_at', { ascending: false });
 
     if (accountsError) {
-      throw new Error(`Database Error fetching accounts: ${accountsError.message}`);
+      return (
+        <AppShell variant="dashboard" activeNav="analytics">
+          <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+            <div className="rounded-2xl border border-red-200 bg-red-50/60 p-6 dark:border-red-900/40 dark:bg-red-950/20">
+              <AlertCircle className="mb-2 h-8 w-8 text-red-500" />
+              <h1 className="text-lg font-semibold text-neutral-900 dark:text-white">Database error</h1>
+              <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                Failed to load connected accounts: {accountsError.message}
+              </p>
+              <Link
+                href="/dashboard/settings"
+                className="btn-secondary mt-4 inline-block px-4 py-2 text-xs"
+              >
+                Go to settings
+              </Link>
+            </div>
+          </div>
+        </AppShell>
+      );
     }
 
     // Handle empty accounts state
@@ -67,7 +85,19 @@ export default async function AnalyticsPage({
       accounts.find((acc) => acc.id === accountId) || accounts[0];
 
     if (!activeAccount) {
-      throw new Error('Failed to resolve active Instagram account.');
+      return (
+        <AppShell variant="dashboard" activeNav="analytics">
+          <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+            <div className="rounded-2xl border border-red-200 bg-red-50/60 p-6 dark:border-red-900/40 dark:bg-red-950/20">
+              <AlertCircle className="mb-2 h-8 w-8 text-red-500" />
+              <h1 className="text-lg font-semibold text-neutral-900 dark:text-white">Account not found</h1>
+              <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                Failed to resolve selected Instagram account.
+              </p>
+            </div>
+          </div>
+        </AppShell>
+      );
     }
 
     // 3. Fetch automations for active account
@@ -77,8 +107,29 @@ export default async function AnalyticsPage({
       .eq('account_id', activeAccount.id);
 
     if (automationsError) {
-      throw new Error(
-        `Database Error fetching automations: ${automationsError.message}`
+      return (
+        <AppShell variant="dashboard" activeNav="analytics">
+          <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-[11px] font-mono font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+                  Performance
+                </p>
+                <h1 className="mt-1 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-white">
+                  Analytics
+                </h1>
+              </div>
+              <AccountSwitcher accounts={accounts} activeAccountId={activeAccount.id} />
+            </div>
+            <div className="rounded-2xl border border-red-200 bg-red-50/60 p-6 dark:border-red-900/40 dark:bg-red-950/20">
+              <AlertCircle className="mb-2 h-8 w-8 text-red-500" />
+              <h1 className="text-lg font-semibold text-neutral-900 dark:text-white">Database error</h1>
+              <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                Failed to load automations: {automationsError.message}
+              </p>
+            </div>
+          </div>
+        </AppShell>
       );
     }
 
@@ -328,25 +379,27 @@ export default async function AnalyticsPage({
     }
     console.error('[Analytics Page Server Exception]', err);
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <div className="max-w-md rounded-2xl border border-red-200 bg-red-50/60 p-8 dark:border-red-900/40 dark:bg-red-950/20">
-          <AlertCircle className="mx-auto mb-4 h-10 w-10 text-red-500" />
-          <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">
-            Failed to load analytics
-          </h1>
-          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-            An unexpected error occurred while compiling your analytics data.
-          </p>
-          <div className="mt-6 flex justify-center gap-3">
-            <Link
-              href="/dashboard"
-              className="btn-secondary px-4 py-2 text-xs"
-            >
-              Go to dashboard
-            </Link>
+      <AppShell variant="dashboard" activeNav="analytics">
+        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+          <div className="mx-auto max-w-md rounded-2xl border border-red-200 bg-red-50/60 p-8 text-center dark:border-red-900/40 dark:bg-red-950/20">
+            <AlertCircle className="mx-auto mb-4 h-10 w-10 text-red-500" />
+            <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">
+              Failed to load analytics
+            </h1>
+            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+              An unexpected error occurred while compiling your analytics data.
+            </p>
+            <div className="mt-6 flex justify-center gap-3">
+              <Link
+                href="/dashboard"
+                className="btn-secondary px-4 py-2 text-xs"
+              >
+                Go to dashboard
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </AppShell>
     );
   }
 }

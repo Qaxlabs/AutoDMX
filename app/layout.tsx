@@ -20,12 +20,16 @@ const OG_IMAGE = "/og-image.png";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "AutoDMX — Turn Instagram Comments into Conversions",
+    default: "AutoDMX — Self-Hosted ManyChat Alternative for Instagram",
     template: "%s · AutoDMX",
   },
   description:
-    "Self-hosted, open-source Instagram comment-to-DM automation. Capture leads, deliver links, and grow sales straight from your comments. Built by Qaxlabs.",
+    "Self-hosted, open-source ManyChat alternative for Instagram comment-to-DM automation. Capture leads, deliver links, and grow sales with 100% data ownership. Built by Qaxlabs.",
   keywords: [
+    "self-hosted ManyChat alternative",
+    "open-source ManyChat alternative",
+    "ManyChat alternative",
+    "Instagram ManyChat alternative",
     "Instagram automation",
     "Instagram DM bot",
     "comment to DM",
@@ -58,18 +62,18 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: SITE_URL,
     siteName: "AutoDMX",
-    title: "AutoDMX — Turn Instagram Comments into Conversions",
+    title: "AutoDMX — Self-Hosted ManyChat Alternative for Instagram",
     description:
-      "Self-hosted, open-source Instagram comment-to-DM automation. Capture leads, deliver links, and grow sales straight from your comments.",
+      "Self-hosted, open-source ManyChat alternative for Instagram comment-to-DM automation. Capture leads, deliver links, and grow sales with complete data ownership.",
     images: [
-      { url: OG_IMAGE, width: 1200, height: 630, alt: "AutoDMX — Instagram comment-to-DM automation" },
+      { url: OG_IMAGE, width: 1200, height: 630, alt: "AutoDMX — Self-Hosted ManyChat Alternative" },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AutoDMX — Turn Instagram Comments into Conversions",
+    title: "AutoDMX — Self-Hosted ManyChat Alternative for Instagram",
     description:
-      "Self-hosted, open-source Instagram comment-to-DM automation. Capture leads and grow sales straight from your comments.",
+      "Self-hosted, open-source ManyChat alternative for Instagram comment-to-DM automation. Capture leads and grow sales with 100% data ownership.",
     images: [OG_IMAGE],
     creator: "@qaxlabs",
   },

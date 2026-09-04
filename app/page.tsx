@@ -106,19 +106,19 @@ export default function Home() {
             {/* Pill Badge */}
             <div className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white/80 px-3.5 py-1 text-xs font-medium text-neutral-700 shadow-sm backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-900/80 dark:text-neutral-300">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              Instagram comment-to-DM automation · by Qaxlabs
+              Self-hosted ManyChat alternative · Open-source by Qaxlabs
             </div>
 
             {/* Apple Style Headline */}
             <h1 className="mt-7 text-balance text-4xl font-semibold tracking-tight text-neutral-900 sm:text-6xl sm:leading-[1.1] dark:text-white">
-              Turn comments into conversions{" "}
-              <span className="text-neutral-500 dark:text-neutral-400">in real time.</span>
+              The self-hosted ManyChat alternative{" "}
+              <span className="text-neutral-500 dark:text-neutral-400">for Instagram.</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-balance text-base leading-relaxed text-neutral-600 sm:text-lg dark:text-neutral-400">
-              AutoDMX is the self-hosted Instagram automation platform built for
-              creators who care about ownership. Capture leads, deliver links,
-              and gate content — all from your own database.
+              AutoDMX is the open-source, self-hosted ManyChat alternative built for
+              creators and developers who care about ownership. Auto-reply to comments,
+              deliver links in DMs, capture leads, and gate content — with zero monthly subscriber fees.
             </p>
 
             {/* CTA Row */}
@@ -229,8 +229,59 @@ export default function Home() {
       <section className="border-y border-neutral-200/80 bg-neutral-50/60 py-8 dark:border-neutral-800/80 dark:bg-neutral-950/40">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <p className="text-center text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-            Built for creators who self-host · Next.js · Supabase · Meta Graph API
+            Self-hosted ManyChat alternative · Next.js · Supabase · Meta Graph API
           </p>
+        </div>
+      </section>
+
+      {/* ====================== Why AutoDMX (ManyChat Comparison) ====================== */}
+      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
+        <div className="rounded-3xl border border-neutral-200/80 bg-white p-8 shadow-sm sm:p-12 dark:border-neutral-800 dark:bg-neutral-900/60">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="inline-block rounded-full border border-emerald-500/20 bg-emerald-50 px-3 py-1 text-xs font-mono font-semibold uppercase tracking-wider text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-400">
+              WHY SWITCH FROM MANYCHAT?
+            </span>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl dark:text-white">
+              Why AutoDMX is the premier self-hosted ManyChat alternative.
+            </h2>
+            <p className="mt-3.5 text-base text-neutral-600 dark:text-neutral-400">
+              Stop paying monthly subscriber taxes and giving third parties access to your private Instagram audience data.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-6 dark:border-neutral-800 dark:bg-neutral-950/40">
+              <div className="text-2xl font-bold text-neutral-900 dark:text-white">$0 / month</div>
+              <div className="mt-1 text-sm font-semibold text-neutral-800 dark:text-neutral-200">No subscriber fees</div>
+              <p className="mt-2 text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
+                Unlike ManyChat which charges more as your subscriber count grows, AutoDMX is 100% free & open source under the MIT license.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-6 dark:border-neutral-800 dark:bg-neutral-950/40">
+              <div className="text-2xl font-bold text-neutral-900 dark:text-white">100% Control</div>
+              <div className="mt-1 text-sm font-semibold text-neutral-800 dark:text-neutral-200">Own your data</div>
+              <p className="mt-2 text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
+                All lead contacts, conversation history, and link tracking live in your own Supabase database. No vendor lock-in.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-6 dark:border-neutral-800 dark:bg-neutral-950/40">
+              <div className="text-2xl font-bold text-neutral-900 dark:text-white">AES-256</div>
+              <div className="mt-1 text-sm font-semibold text-neutral-800 dark:text-neutral-200">Encrypted credentials</div>
+              <p className="mt-2 text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
+                Instagram tokens are encrypted at rest before hitting the database. Only your server holds the decryption key.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-6 dark:border-neutral-800 dark:bg-neutral-950/40">
+              <div className="text-2xl font-bold text-neutral-900 dark:text-white">Meta API</div>
+              <div className="mt-1 text-sm font-semibold text-neutral-800 dark:text-neutral-200">Built-in rate limits</div>
+              <p className="mt-2 text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
+                Database-enforced hourly and daily limits keep your account fully compliant with official Meta Graph API rules.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
