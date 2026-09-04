@@ -134,8 +134,8 @@ export function AppShell({
             <div>
               <BrandMark />
               <p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-                Self-hosted Instagram comment-to-DM automation, built for
-                creators who want full control of their audience data.
+                The open-source, self-hosted ManyChat alternative for Instagram comment-to-DM automation.
+                Full data ownership, zero recurring subscriber fees.
               </p>
             </div>
 
