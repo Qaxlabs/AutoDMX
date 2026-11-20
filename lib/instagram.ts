@@ -5,6 +5,7 @@ interface InstagramComment {
   id: string;
   text?: string;
   created_time?: number;
+  parent_id?: string;
   media?: {
     id: string;
   };
@@ -121,7 +122,7 @@ async function checkFollowStatus(
       { method: 'GET' }
     );
     const profileData = await profileRes.json();
-    
+
     if (profileData.error) {
       console.error(`[Meta API Error] Follow status check returned error:`, profileData.error.message);
       await supabase.from('message_log').insert({
@@ -190,7 +191,7 @@ async function sendOrQueueReply(
     .eq('direction', 'out')
     .eq('contacts.account_id', account.id)
     .gt('created_at', oneHourAgo);
-  
+
   const currentHourSends = count || 0;
   const isRateLimitExceeded = currentHourSends >= 200;
 
@@ -205,7 +206,7 @@ async function sendOrQueueReply(
       message: { text },
       access_token: accessToken,
     };
-    
+
     if (quickReplies && quickReplies.length > 0) {
       body.message.quick_replies = quickReplies;
     }
@@ -280,7 +281,33 @@ export async function handleCommentTrigger(
     const account: DecryptedAccount = accountData;
     const accessToken = decrypt(account.encrypted_access_token);
 
-    // 1b. Verify comment is within 7 days (limit set by Meta)
+    // 1b. Skip if comment is a threaded reply to another comment
+    if (comment.parent_id) {
+      console.warn(`[Instagram Trigger] Comment ${comment.id} is a reply (parent_id: ${comment.parent_id}). Skipping.`);
+      return;
+    }
+
+    // 1c. Skip if comment is made by the connected account owner
+    if (
+      comment.from?.username &&
+      account.ig_username &&
+      comment.from.username.toLowerCase() === account.ig_username.toLowerCase()
+    ) {
+      console.warn(`[Instagram Trigger] Comment ${comment.id} is from account owner @${account.ig_username}. Skipping self-reply.`);
+      return;
+    }
+
+    // 1d. Skip if comment text matches any automated public reply variant to prevent loop
+    const replies = automation.public_reply_variants || [];
+    const isMatchingReplyVariant = replies.some(
+      (variant) => variant.trim().toLowerCase() === (comment.text || '').trim().toLowerCase()
+    );
+    if (isMatchingReplyVariant) {
+      console.warn(`[Instagram Trigger] Comment ${comment.id} text matches an automated reply variant. Skipping self-reply loop.`);
+      return;
+    }
+
+    // 1e. Verify comment is within 7 days (limit set by Meta)
     if (comment.created_time) {
       const sevenDaysInSeconds = 7 * 24 * 60 * 60;
       const nowInSeconds = Math.floor(Date.now() / 1000);
@@ -291,11 +318,10 @@ export async function handleCommentTrigger(
     }
 
     // 2. Post a random public reply variant immediately (Unconditional & first action)
-    const replies = automation.public_reply_variants || [];
     if (replies.length > 0) {
       const randomReply = replies[Math.floor(Math.random() * replies.length)];
       console.log(`[Meta API] Posting public reply variant: "${randomReply}" to comment ${comment.id}`);
-      
+
       const replyRes = await fetchWithBackoff(
         `https://graph.instagram.com/v21.0/${comment.id}/replies`,
         {
@@ -307,7 +333,7 @@ export async function handleCommentTrigger(
           }),
         }
       );
-      
+
       const replyData = await replyRes.json();
       if (replyData.error) {
         console.error(`[Meta API Error] Failed to post public reply:`, replyData.error.message);
@@ -441,7 +467,7 @@ export async function handleCommentTrigger(
         .from('conversation_state')
         .insert(stateData);
     }
-    
+
     console.log(`[Instagram Trigger] Successfully completed trigger sequence for comment ${comment.id}`);
   } catch (err) {
     console.error(`[Instagram Trigger Error] Failed to process comment trigger for comment ${comment.id}:`, err);
@@ -551,7 +577,7 @@ export async function handleMessageEvent(
           body: JSON.stringify(body),
         }
       );
-      
+
       const dmData = await dmRes.json();
       if (dmData.error) {
         console.error(`[Meta API Error] Failed to send DM reply:`, dmData.error.message);

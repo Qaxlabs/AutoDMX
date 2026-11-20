@@ -40,9 +40,9 @@ function getInstagramSyncMessage(apiError: string) {
 }
 
 export default async function Dashboard({
-  searchParams,
+  searchParams = {},
 }: {
-  searchParams: { accountId?: string };
+  searchParams?: { accountId?: string };
 }) {
   const supabase = createClient();
 
@@ -120,7 +120,7 @@ export default async function Dashboard({
 
   // 2. Select active account
   const activeAccount =
-    accounts.find((acc) => acc.id === searchParams.accountId) || accounts[0];
+    accounts.find((acc) => acc.id === searchParams?.accountId) || accounts[0];
 
   // 3. Decrypt active account token
   let decryptedToken = '';
