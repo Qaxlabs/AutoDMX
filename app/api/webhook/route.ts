@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     // Fetch the single connected account regardless of ID format (single-tenant routing)
     const { data: account, error: accountError } = await supabase
       .from('accounts')
-      .select('id, webhook_account_id, ig_user_id')
+      .select('id, webhook_account_id, ig_user_id, ig_username')
       .limit(1)
       .maybeSingle();
 
@@ -154,12 +154,27 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // Skip comment replies (threaded comments with parent_id) to avoid nested reply cascades
+      if (commentValue.parent_id) {
+        console.log(`[Webhook POST] Skipping comment ${commentValue.id} because it is a reply to comment ${commentValue.parent_id}`);
+        continue;
+      }
+
       // Bug fix: Skip comments made by our own account to prevent a reply loop.
       // When the bot posts a public reply, Meta fires a webhook for that reply too.
-      // Without this guard, the bot replies to its own reply, causing 7-9 repeated comments.
+      // Without this guard, the bot replies to its own reply, causing 10-30 repeated comments.
       const commentFromId = commentValue.from?.id;
-      if (commentFromId && account.ig_user_id && commentFromId === account.ig_user_id) {
-        console.log(`[Webhook POST] Skipping self-comment ${commentValue.id} from our own account to prevent reply loop.`);
+      const commentFromUsername = commentValue.from?.username?.toLowerCase();
+      const accountUsername = account.ig_username?.toLowerCase();
+
+      const isSelfComment =
+        (commentFromId && account.ig_user_id && commentFromId === account.ig_user_id) ||
+        (commentFromId && account.webhook_account_id && commentFromId === account.webhook_account_id) ||
+        (commentFromId && entryId && commentFromId === entryId) ||
+        (accountUsername && commentFromUsername && commentFromUsername === accountUsername);
+
+      if (isSelfComment) {
+        console.log(`[Webhook POST] Skipping self-comment ${commentValue.id} from our own account (@${commentFromUsername || commentFromId}) to prevent reply loop.`);
         continue;
       }
 
@@ -181,7 +196,14 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      for (const automation of automations) {
+      // Prioritize specific post automations over generic 'any' post automations
+      const sortedAutomations = [...automations].sort((a, b) => {
+        if (a.media_scope === 'specific' && b.media_scope !== 'specific') return -1;
+        if (a.media_scope !== 'specific' && b.media_scope === 'specific') return 1;
+        return 0;
+      });
+
+      for (const automation of sortedAutomations) {
         // Match scope: specific post or any post
         const matchesScope =
           (automation.media_scope === 'specific' && automation.media_id === mediaId) ||
@@ -205,6 +227,8 @@ export async function POST(request: NextRequest) {
         if (matchesKeywords) {
           try {
             await handleCommentTrigger(commentValue, automation);
+            // Break after the first matched automation so a comment doesn't trigger multiple replies
+            break;
           } catch (triggerError) {
             console.error('[Webhook POST] handleCommentTrigger failed:', triggerError);
           }

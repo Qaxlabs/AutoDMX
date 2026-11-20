@@ -50,11 +50,12 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
   // Filter contacts based on search query
   const filteredContacts = contacts.filter((c) => {
     const term = searchTerm.toLowerCase();
+    const tags = Array.isArray(c.tags) ? c.tags : [];
     return (
       c.username.toLowerCase().includes(term) ||
       (c.email && c.email.toLowerCase().includes(term)) ||
       (c.phone && c.phone.toLowerCase().includes(term)) ||
-      c.tags.some((t) => t.toLowerCase().includes(term))
+      tags.some((t) => t.toLowerCase().includes(term))
     );
   });
 
@@ -124,7 +125,7 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
       c.follows_business === null ? 'Unknown' : c.follows_business ? 'Yes' : 'No',
       c.email || '',
       c.phone || '',
-      c.tags.join('; '),
+      (c.tags || []).join('; '),
       new Date(c.last_interaction_at).toISOString(),
     ]);
 
@@ -274,7 +275,7 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
                       {/* Tags */}
                       <td className="px-6 py-4">
                         <div className="flex max-w-xs flex-wrap items-center gap-1.5">
-                          {c.tags.map((tag) => (
+                          {(c.tags || []).map((tag) => (
                             <span
                               key={tag}
                               className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-700 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300"
@@ -282,7 +283,7 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
                               {tag}
                               <button
                                 onClick={() =>
-                                  handleRemoveTag(c.id, c.tags, tag)
+                                  handleRemoveTag(c.id, c.tags || [], tag)
                                 }
                                 disabled={loading}
                                 className="text-neutral-400 transition-colors hover:text-black dark:hover:text-white"
@@ -298,7 +299,7 @@ export default function ContactsTable({ contacts, accountId, accounts }: Props) 
                             <form
                               onSubmit={(e) => {
                                 e.preventDefault();
-                                handleAddTag(c.id, c.tags);
+                                handleAddTag(c.id, c.tags || []);
                               }}
                               className="flex items-center"
                             >
